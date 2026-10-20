@@ -6,23 +6,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="theme-color" content="#286E46" />
-  <title>LINE FRIENDS 積木日曆俄羅斯方塊 · 完整版</title>
+  <title>LINE FRIENDS 積木日曆俄羅斯方塊</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --frame-green: #286E46;
-      --frame-green-dark: #1B5032;
-      --frame-green-light: #398A5B;
-      --stud-green: #2E7D52;
-      --board-bg: #153B25;
-      --block-white: #F7F6F0;
-      --block-brown: #3A241B;
-      --block-orange: #D9822B;
-      --block-blue: #7393B3;
-      --block-green: #2F7D53;
       --safe-bottom: env(safe-area-inset-bottom, 0px);
-      --safe-top: env(safe-area-inset-top, 0px);
     }
     * {
       box-sizing: border-box;
@@ -32,27 +21,21 @@
       -webkit-tap-highlight-color: transparent;
     }
     html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
+      margin: 0; padding: 0; height: 100%;
       overscroll-behavior: none;
     }
     body {
       font-family: 'Fredoka', 'Noto Sans TC', sans-serif;
-      background: radial-gradient(circle at 50% 20%, #FFF8EB 0%, #F3E3C9 55%, #E5CEAA 100%);
+      background: #1E5636;
       min-height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
       overflow: hidden;
       color: #2C1D14;
-      padding-bottom: var(--safe-bottom);
     }
-    body.playing {
-      overflow: hidden;
-      touch-action: none;
-    }
+    body.playing { overflow: hidden; touch-action: none; }
+
     .app-shell {
       width: 100%;
       max-width: 480px;
@@ -60,117 +43,110 @@
       height: 100svh;
       display: flex;
       flex-direction: column;
-      background: linear-gradient(145deg, #318254 0%, #266A43 60%, #1E5636 100%);
-      border: 3px solid #1C5232;
-      border-radius: 0;
-      box-shadow: inset 0 2px 3px rgba(255,255,255,0.18);
+      background: linear-gradient(160deg, #2A7A4A 0%, #1E5636 55%, #163D26 100%);
       overflow: hidden;
       position: relative;
     }
     @media (min-width: 500px) {
       .app-shell {
-        border-radius: 18px;
-        max-height: 920px;
-        margin: 12px auto;
-        height: calc(100dvh - 24px);
+        border-radius: 16px;
+        max-height: 900px;
+        margin: 10px auto;
+        height: calc(100dvh - 20px);
+        border: 3px solid #1C5232;
+        box-shadow: 0 12px 28px rgba(0,0,0,0.35);
       }
     }
 
-    .top-bar {
+    /* ===== 頂部精簡列：品牌 + 分數 ===== */
+    .top-slim {
       flex: 0 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 6px 10px 4px;
-      gap: 6px;
-      background: linear-gradient(180deg, rgba(0,0,0,0.18) 0%, transparent 100%);
+      gap: 8px;
+      background: rgba(0,0,0,0.18);
     }
     .brand {
-      display: flex;
-      align-items: center;
-      gap: 6px;
       font-size: 13px;
       font-weight: 800;
       color: #fff;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.35);
-    }
-    .brand .emoji { font-size: 18px; }
-    .vacation-badge {
-      background: linear-gradient(180deg, #FFF8E7, #F5E6C8);
-      color: #5C3A1A;
-      font-size: 11px;
-      font-weight: 800;
-      padding: 3px 10px;
-      border-radius: 999px;
-      border: 1.5px solid #E8D4A8;
-      box-shadow: 0 2px 0 #D4B98A;
-    }
-
-    .utility-row {
-      flex: 0 0 auto;
-      display: flex;
-      gap: 5px;
-      padding: 2px 8px 6px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .util-btn {
       display: flex;
       align-items: center;
-      gap: 3px;
-      padding: 5px 9px;
+      gap: 4px;
+      white-space: nowrap;
+    }
+    .score-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(15, 42, 26, 0.9);
       border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 2px 0 rgba(0,0,0,0.2);
-      transition: transform 0.1s;
+      padding: 4px 12px;
+      border: 1.5px solid rgba(255,255,255,0.12);
     }
-    .util-btn:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(0,0,0,0.2); }
-    .util-bgm { background: #1E7A4A; color: #fff; }
-    .util-style { background: #2D6A4F; color: #FDE68A; border: 1px solid rgba(255,255,255,0.2); }
-    .util-sfx { background: #0E7490; color: #fff; }
-    .util-test { background: #D97706; color: #fff; }
-    .util-help { background: #fff; color: #1E5636; width: 28px; height: 28px; justify-content: center; padding: 0; border-radius: 50%; }
-
-    .weekday-row {
-      flex: 0 0 auto;
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 2px;
-      padding: 0 8px 4px;
+    .score-pill .s-item {
       text-align: center;
+      line-height: 1.15;
     }
-    .weekday-row span {
-      font-size: 11px;
+    .score-pill .s-label {
+      font-size: 9px;
+      color: #A7F3D0;
       font-weight: 700;
-      color: rgba(255,255,255,0.85);
-      padding: 2px 0;
+    }
+    .score-pill .s-val {
+      font-size: 15px;
+      font-weight: 900;
+      color: #FCD34D;
+    }
+    .score-pill .s-val.small {
+      font-size: 12px;
+      color: #fff;
     }
 
+    /* 迷你功能列（極簡） */
+    .mini-utils {
+      flex: 0 0 auto;
+      display: flex;
+      gap: 4px;
+      padding: 2px 8px 4px;
+      justify-content: center;
+    }
+    .mini-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+    }
+    .mini-btn.on { background: #0E7490; }
+    .mini-btn.test { background: #D97706; }
+
+    /* ===== 遊戲區（最大） ===== */
     .play-area {
       flex: 1 1 auto;
       min-height: 0;
       display: flex;
       flex-direction: column;
-      padding: 0 6px;
-      gap: 4px;
+      padding: 0 4px;
+      gap: 3px;
     }
     .board-well {
       flex: 1 1 auto;
       min-height: 0;
-      background: #133622;
-      border-radius: 12px;
-      box-shadow:
-        inset 0 4px 12px rgba(0,0,0,0.45),
-        inset 0 1px 0 rgba(255,255,255,0.05);
+      background: #0F2A1A;
+      border-radius: 10px;
+      box-shadow: inset 0 4px 14px rgba(0,0,0,0.5);
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
       overflow: hidden;
-      border: 2px solid #0F2A1A;
+      border: 2px solid #0A1F12;
     }
     #gameCanvas {
       display: block;
@@ -178,17 +154,13 @@
       max-height: 100%;
       width: auto !important;
       height: auto !important;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
       touch-action: none;
     }
-    /* 浮動泡泡粒子容器 */
     .bubble-layer {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 20;
+      position: absolute; inset: 0;
+      pointer-events: none; overflow: hidden; z-index: 20;
     }
     .bubble {
       position: absolute;
@@ -196,353 +168,196 @@
       background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(180,235,255,0.4) 60%, rgba(100,190,255,0.18));
       box-shadow: inset 0 0 4px rgba(255,255,255,0.75), 0 0 6px rgba(150,220,255,0.45);
       animation: rise linear forwards;
-      pointer-events: none;
     }
     @keyframes rise {
       0% { transform: translateY(0) scale(0.85); opacity: 0.95; }
       70% { transform: translateY(-85px) scale(1.1); opacity: 0.85; }
       100% { transform: translateY(-130px) scale(1.25); opacity: 0; }
     }
-
-    /* 消行休假慶祝浮動橫幅 */
     .celebration-toast {
-      position: absolute;
-      top: 38%;
-      left: 50%;
+      position: absolute; top: 36%; left: 50%;
       transform: translate(-50%, -50%) scale(0.85);
       background: rgba(251, 191, 36, 0.96);
-      color: #3A241B;
-      font-weight: 900;
-      font-size: 16px;
-      padding: 8px 18px;
-      border-radius: 16px;
-      border: 3px solid #FFFFFF;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.35);
-      white-space: nowrap;
-      pointer-events: none;
-      opacity: 0;
-      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      color: #3A241B; font-weight: 900; font-size: 15px;
+      padding: 7px 16px; border-radius: 14px;
+      border: 3px solid #fff;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+      white-space: nowrap; pointer-events: none;
+      opacity: 0; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
       z-index: 30;
     }
     .celebration-toast.show {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
+      opacity: 1; transform: translate(-50%, -50%) scale(1);
     }
 
-    .info-strip {
+    /* NEXT / HOLD 迷你列（緊湊） */
+    .preview-row {
       flex: 0 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr 1.4fr;
+      display: flex;
       gap: 6px;
+      justify-content: center;
+      align-items: center;
       padding: 0 2px;
     }
-    .info-card {
-      background: rgba(15, 42, 26, 0.85);
-      border-radius: 10px;
-      border: 1.5px solid rgba(255,255,255,0.08);
-      padding: 5px 6px;
+    .preview-box {
+      background: rgba(13, 36, 24, 0.9);
+      border-radius: 8px;
+      padding: 3px 6px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 0;
+      border: 1px solid rgba(255,255,255,0.08);
     }
-    .info-label {
-      font-size: 10px;
+    .preview-box span {
+      font-size: 9px;
       font-weight: 800;
       color: #A7F3D0;
-      letter-spacing: 0.5px;
-      margin-bottom: 2px;
+      margin-bottom: 1px;
     }
-    .mini-well {
-      background: #0D2418;
-      border-radius: 8px;
-      width: 58px;
-      height: 58px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+    .preview-box canvas {
+      width: 44px; height: 44px;
     }
-    .mini-well canvas { width: 52px; height: 52px; }
-    .score-value {
-      font-size: 20px;
-      font-weight: 900;
-      color: #FCD34D;
-      line-height: 1.1;
-    }
-    .stat-row {
-      display: flex;
-      gap: 8px;
-      width: 100%;
-      justify-content: center;
-      margin-top: 2px;
-    }
-    .stat-item {
-      text-align: center;
-      font-size: 10px;
-      color: #A7F3D0;
-    }
-    .stat-item strong {
-      display: block;
-      font-size: 13px;
-      color: #fff;
-      font-weight: 800;
-    }
-
-    .support-bar {
-      flex: 0 0 auto;
-      background: #2A1A12;
-      border-radius: 12px;
-      margin: 4px 6px 2px;
-      padding: 6px 8px 8px;
-      border: 2px solid #1A100C;
-    }
-    .support-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 4px;
-    }
-    .support-title {
-      font-size: 12px;
-      font-weight: 800;
-      color: #F5D0A9;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .support-pct {
-      font-size: 11px;
-      font-weight: 800;
-      color: #FCD34D;
-    }
-    .energy-track {
-      height: 10px;
+    .energy-mini {
+      flex: 1;
+      max-width: 120px;
+      height: 8px;
       background: #1A100C;
       border-radius: 999px;
       overflow: hidden;
-      margin-bottom: 6px;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.6);
+      margin: 0 4px;
     }
-    .energy-fill {
+    .energy-mini .fill {
       height: 100%;
-      width: 100%;
-      background: linear-gradient(90deg, #F59E0B, #FBBF24, #FDE68A);
+      background: linear-gradient(90deg, #F59E0B, #FBBF24);
       border-radius: 999px;
       transition: width 0.3s;
     }
-    .skill-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-    }
-    .skill-btn {
-      border: none;
-      border-radius: 10px;
-      padding: 8px 6px;
-      font-size: 12px;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      box-shadow: 0 3px 0 rgba(0,0,0,0.25);
-      transition: transform 0.1s;
-    }
-    .skill-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.25); }
-    .skill-b { background: linear-gradient(180deg, #FBBF24, #F59E0B); color: #3A241B; }
-    .skill-g { background: linear-gradient(180deg, #FB923C, #EA580C); color: #fff; }
 
+    /* ===== 底部控制（只保留方向 + 旋轉 + 落地） ===== */
     .controls {
       flex: 0 0 auto;
-      padding: 6px 8px calc(8px + var(--safe-bottom));
-      background: linear-gradient(180deg, transparent, rgba(0,0,0,0.15));
+      padding: 5px 8px calc(6px + var(--safe-bottom));
+      background: rgba(0,0,0,0.2);
     }
     .pad-row {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
       gap: 6px;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
     .pad-btn {
       background: #F7F6F0;
       color: #3A241B;
       border: none;
       border-radius: 12px;
-      height: 48px;
+      height: 46px;
       font-size: 18px;
       font-weight: 900;
-      box-shadow: 0 4px 0 #C8C2B4, 0 6px 10px rgba(0,0,0,0.2);
+      box-shadow: 0 3px 0 #C8C2B4;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.08s, box-shadow 0.08s;
       touch-action: manipulation;
     }
     .pad-btn:active {
-      transform: translateY(3px);
+      transform: translateY(2px);
       box-shadow: 0 1px 0 #C8C2B4;
     }
     .pad-rotate {
       background: #D9822B;
       color: #fff;
-      box-shadow: 0 4px 0 #A65F1A, 0 6px 10px rgba(0,0,0,0.2);
+      box-shadow: 0 3px 0 #A65F1A;
     }
-    .pad-pause {
-      background: #1F5837;
-      color: #fff;
-      box-shadow: 0 4px 0 #0F2E1C, 0 6px 10px rgba(0,0,0,0.2);
-    }
-    .action-row {
-      display: grid;
-      grid-template-columns: 1.6fr 1fr;
-      gap: 6px;
-    }
-    .action-btn {
-      border: none;
-      border-radius: 12px;
-      height: 44px;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      box-shadow: 0 3px 0 rgba(0,0,0,0.25);
-      transition: transform 0.08s;
-      touch-action: manipulation;
-    }
-    .action-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.25); }
-    .btn-drop {
+    .pad-drop {
       background: linear-gradient(180deg, #7393B3, #52718F);
       color: #fff;
+      box-shadow: 0 3px 0 #3A556B;
     }
-    .btn-hold {
-      background: linear-gradient(180deg, #FBBF24, #D97706);
-      color: #3A241B;
-    }
-    .hint {
-      text-align: center;
-      font-size: 10px;
-      color: rgba(255,255,255,0.65);
+    .skill-mini {
+      display: flex;
+      gap: 6px;
       margin-top: 4px;
-      font-weight: 700;
     }
+    .skill-mini button {
+      flex: 1;
+      border: none;
+      border-radius: 10px;
+      height: 36px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .skill-b { background: #FBBF24; color: #3A241B; }
+    .skill-g { background: #FB923C; color: #fff; }
 
     .overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(10, 30, 18, 0.92);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 40;
-      padding: 20px;
-      text-align: center;
-      border-radius: inherit;
+      position: absolute; inset: 0;
+      background: rgba(10, 30, 18, 0.93);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 40; padding: 20px; text-align: center;
     }
-    .overlay h1 {
-      font-size: 22px;
-      font-weight: 900;
-      color: #fff;
-      margin-bottom: 8px;
-    }
-    .overlay p {
-      font-size: 13px;
-      color: #A7F3D0;
-      line-height: 1.5;
-      max-width: 280px;
-      margin-bottom: 16px;
-    }
+    .overlay h1 { font-size: 20px; font-weight: 900; color: #fff; margin-bottom: 8px; }
+    .overlay p { font-size: 12px; color: #A7F3D0; line-height: 1.5; max-width: 260px; margin-bottom: 14px; }
     .start-btn {
       background: linear-gradient(180deg, #FBBF24, #F59E0B);
-      color: #3A241B;
-      border: none;
-      border-radius: 16px;
-      padding: 12px 28px;
-      font-size: 16px;
-      font-weight: 900;
-      box-shadow: 0 5px 0 #B45309, 0 8px 16px rgba(0,0,0,0.3);
-      cursor: pointer;
-    }
-    .start-btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 2px 0 #B45309;
+      color: #3A241B; border: none; border-radius: 14px;
+      padding: 11px 24px; font-size: 15px; font-weight: 900;
+      box-shadow: 0 4px 0 #B45309; cursor: pointer;
     }
 
     .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      padding: 16px;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      display: none; align-items: center; justify-content: center;
+      z-index: 100; padding: 16px;
     }
     .modal.show { display: flex; }
     .modal-card {
-      background: #FFF8EB;
-      border-radius: 18px;
-      max-width: 360px;
-      width: 100%;
-      max-height: 80vh;
-      overflow-y: auto;
-      padding: 18px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+      background: #FFF8EB; border-radius: 16px;
+      max-width: 340px; width: 100%; max-height: 75vh;
+      overflow-y: auto; padding: 16px;
     }
-    .modal-card h2 {
-      font-size: 18px;
-      font-weight: 900;
-      color: #1E5636;
-      margin-bottom: 10px;
-    }
-    .modal-card ul {
-      font-size: 13px;
-      color: #3A241B;
-      line-height: 1.55;
-      padding-left: 18px;
-    }
-    .modal-card li { margin-bottom: 6px; }
+    .modal-card h2 { font-size: 16px; font-weight: 900; color: #1E5636; margin-bottom: 8px; }
+    .modal-card ul { font-size: 12px; color: #3A241B; line-height: 1.5; padding-left: 16px; }
+    .modal-card li { margin-bottom: 5px; }
     .close-modal {
-      margin-top: 14px;
-      width: 100%;
-      background: #1E5636;
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      padding: 10px;
-      font-weight: 800;
-      cursor: pointer;
+      margin-top: 12px; width: 100%; background: #1E5636; color: #fff;
+      border: none; border-radius: 10px; padding: 9px; font-weight: 800; cursor: pointer;
     }
   </style>
 </head>
 <body>
   <div class="app-shell">
-    <div class="top-bar">
-      <div class="brand">
-        <span class="emoji">🧸</span>
-        <span>LINE FRIENDS 積木日曆</span>
+    <!-- 頂部：品牌 + 分數（一目了然） -->
+    <div class="top-slim">
+      <div class="brand">🧸 積木日曆</div>
+      <div class="score-pill">
+        <div class="s-item">
+          <div class="s-label">分數</div>
+          <div class="s-val" id="scoreVal">0</div>
+        </div>
+        <div class="s-item">
+          <div class="s-label">休假</div>
+          <div class="s-val small" id="linesVal">0天</div>
+        </div>
+        <div class="s-item">
+          <div class="s-label">等級</div>
+          <div class="s-val small" id="levelVal">Lv.1</div>
+        </div>
       </div>
-      <div class="vacation-badge">🏖️ 累積休假 <span id="vacationDays">0</span> 天</div>
     </div>
 
-    <div class="utility-row">
-      <button class="util-btn util-bgm" id="btnToggleBgm" type="button">🎵 輕快音樂: 開</button>
-      <button class="util-btn util-style" id="btnSwitchBgmStyle" type="button">🎶 曲風: 泡泡派對</button>
-      <button class="util-btn util-sfx" id="btnToggleSfx" type="button">🫧 泡泡音: 開</button>
-      <button class="util-btn util-test" id="btnTestBubble" type="button">🫧 啵啵試聽</button>
-      <button class="util-btn util-help" id="btnHelp" type="button">?</button>
+    <!-- 迷你功能 -->
+    <div class="mini-utils">
+      <button class="mini-btn on" id="btnToggleBgm" type="button">🎵 音樂</button>
+      <button class="mini-btn on" id="btnToggleSfx" type="button">🫧 音效</button>
+      <button class="mini-btn test" id="btnTestBubble" type="button">啵啵試聽</button>
+      <button class="mini-btn" id="btnHelp" type="button">?</button>
     </div>
 
-    <div class="weekday-row">
-      <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-    </div>
-
+    <!-- 遊戲區（最大） -->
     <div class="play-area">
       <div class="board-well" id="boardWell">
         <canvas id="gameCanvas" width="300" height="540"></canvas>
@@ -550,75 +365,56 @@
         <div class="celebration-toast" id="celebrationToast">🏖️ 休假囉！啵啵！</div>
         <div class="overlay" id="startOverlay">
           <h1>LINE FRIENDS 日曆方塊</h1>
-          <p>堆疊可愛樂高凸點「日期方塊」與「圖示方塊」，湊滿整行即可翻轉為「休」字放假積木並觸發啵啵泡泡音！</p>
-          <button class="start-btn" id="btnStart">▶️ 開始堆疊日曆</button>
+          <p>堆疊樂高凸點日期方塊，湊滿整行翻轉成「休」字放假！</p>
+          <button class="start-btn" id="btnStart">▶️ 開始堆疊</button>
         </div>
       </div>
 
-      <div class="info-strip">
-        <div class="info-card">
-          <div class="info-label">NEXT 下一個</div>
-          <div class="mini-well"><canvas id="nextCanvas" width="52" height="52"></canvas></div>
+      <!-- NEXT / HOLD + 能量條 -->
+      <div class="preview-row">
+        <div class="preview-box" id="holdWellBox">
+          <span>HOLD</span>
+          <canvas id="holdCanvas" width="44" height="44"></canvas>
         </div>
-        <div class="info-card">
-          <div class="info-label">HOLD 暫存</div>
-          <div class="mini-well" id="holdWellBox" style="cursor:pointer;"><canvas id="holdCanvas" width="52" height="52"></canvas></div>
-        </div>
-        <div class="info-card">
-          <div class="info-label">SCORE 分數</div>
-          <div class="score-value" id="scoreVal">0</div>
-          <div class="stat-row">
-            <div class="stat-item">🏖️<strong id="linesVal">0</strong>天</div>
-            <div class="stat-item">⭐<strong id="levelVal">Lv.1</strong></div>
-          </div>
+        <div class="energy-mini"><div class="fill" id="energyFill" style="width:100%"></div></div>
+        <div class="preview-box">
+          <span>NEXT</span>
+          <canvas id="nextCanvas" width="44" height="44"></canvas>
         </div>
       </div>
     </div>
 
-    <div class="support-bar">
-      <div class="support-header">
-        <div class="support-title">🐻 熊大與莎莉應援</div>
-        <div class="support-pct" id="energyPct">100% READY!</div>
-      </div>
-      <div class="energy-track"><div class="energy-fill" id="energyFill" style="width:100%"></div></div>
-      <div class="skill-row">
-        <button class="skill-btn skill-b" id="btnBrownLine" type="button">🏖️ 熊大消一行 (B)</button>
-        <button class="skill-btn skill-g" id="btnBrownGift" type="button">🎁 召喚休假塊 (G)</button>
-      </div>
-    </div>
-
+    <!-- 控制區：方向 + 旋轉 + 落地 -->
     <div class="controls">
       <div class="pad-row">
         <button class="pad-btn" id="btnLeft" type="button">◀</button>
         <button class="pad-btn pad-rotate" id="btnRotate" type="button">↻</button>
         <button class="pad-btn" id="btnDown" type="button">▼</button>
         <button class="pad-btn" id="btnRight" type="button">▶</button>
-        <button class="pad-btn pad-pause" id="btnPause" type="button">⏸</button>
+        <button class="pad-btn pad-drop" id="btnDrop" type="button">⏬</button>
       </div>
-      <div class="action-row">
-        <button class="action-btn btn-drop" id="btnDrop" type="button">⏬ 啵啵直接落地</button>
-        <button class="action-btn btn-hold" id="btnHold" type="button">📦 HOLD</button>
+      <div class="skill-mini">
+        <button class="skill-b" id="btnBrownLine" type="button">🏖️ 熊大消一行</button>
+        <button class="skill-g" id="btnBrownGift" type="button">🎁 休假禮盒</button>
+        <button class="pad-btn" id="btnPause" type="button" style="flex:0.4;height:36px;font-size:14px;background:#1F5837;color:#fff;box-shadow:none;">⏸</button>
       </div>
-      <div class="hint">手機也可在畫面滑動：←→移動 ↑旋轉 ↓加速 點擊旋轉</div>
     </div>
   </div>
 
   <div class="modal" id="helpModal">
     <div class="modal-card">
-      <h2>🧸 遊戲玩法與音效說明</h2>
+      <h2>🧸 玩法說明</h2>
       <ul>
-        <li><strong>樂高積木外觀</strong>：白色日期方塊 (1~31、休) 與四色可愛圖示方塊（兔兔、熊大、莎莉、仙人掌、冰淇淋、小花、盆栽、嫩芽）。</li>
-        <li><strong>「休」字慶祝</strong>：湊滿整行會先閃耀翻轉成金黃色「休」字放假積木，伴隨清脆水泡與慶祝動畫。</li>
-        <li><strong>熊大技能</strong>：B 鍵直接把最底層變成「休」字消除、G 鍵召喚單格百搭「🎁 休假禮盒」。</li>
-        <li><strong>Q 彈泡泡音效</strong>：模擬真實水滴氣泡由低往高頻率收縮的「啵啵聲 (Bloop & Pop)」。</li>
-        <li><strong>輕快有趣背景音樂</strong>：內建三首輕快木琴泡泡旋律（泡泡派對／午後散步／莎莉嘉年華），可隨時切換！</li>
-        <li><strong>操作方式</strong>：手機底部零延遲大按鈕或畫面滑動；電腦支援 ←→移動、↑/Z旋轉、↓加速、空白鍵落地、C暫存。</li>
+        <li>湊滿整行 → 翻轉成「休」字放假積木</li>
+        <li>左右移動 / 旋轉 / 加速 / 硬降</li>
+        <li>B：熊大消一行　G：召喚休假禮盒</li>
+        <li>鍵盤：←→↑↓ 空白 C B G P</li>
       </ul>
-      <button class="close-modal" id="btnCloseHelp">知道了，繼續遊戲！</button>
+      <button class="close-modal" id="btnCloseHelp">知道了</button>
     </div>
   </div>
 
-  <script>
+<script>
     // =========================================================================
     // 1. Q彈水滴泡泡音效 + 輕快有趣木琴背景音樂合成器 (Web Audio API)
     // =========================================================================
@@ -1049,7 +845,7 @@
         document.getElementById('linesVal').textContent = lines;
         document.getElementById('scoreVal').textContent = score;
         document.getElementById('levelVal').textContent = 'Lv.' + level;
-        document.getElementById('vacationDays').textContent = lines;
+        document.getElementById('linesVal').textContent = lines + '天';
         updateEnergy();
 
         if (score > best) {
@@ -1171,7 +967,7 @@
 
     function updateEnergy() {
       document.getElementById('energyFill').style.width = energy + '%';
-      document.getElementById('energyPct').textContent = energy >= 50 ? `${energy}% READY!` : `${energy}% 充能中`;
+      (document.getElementById('energyPct') || {textContent:''}).textContent = energy >= 50 ? `${energy}% READY!` : `${energy}% 充能中`;
     }
 
     // 熊大技能 B：直接將最底層有方塊的那一行變成「休」字消除！
@@ -1364,7 +1160,7 @@
       document.getElementById('scoreVal').textContent = '0';
       document.getElementById('linesVal').textContent = '0';
       document.getElementById('levelVal').textContent = 'Lv.1';
-      document.getElementById('vacationDays').textContent = '0';
+      document.getElementById('linesVal').textContent = '0天';
       document.getElementById('btnPause').textContent = '⏸';
       updateEnergy();
       drawHold();
@@ -1400,7 +1196,8 @@
     bindFastTap('btnDown', softDrop);
     bindFastTap('btnRotate', doRotate);
     bindFastTap('btnDrop', hardDrop);
-    bindFastTap('btnHold', holdPiece);
+    // HOLD via holdWellBox
+    // // HOLD via preview box
     bindFastTap('holdWellBox', holdPiece);
     bindFastTap('btnBrownLine', brownClearLine);
     bindFastTap('btnBrownGift', brownGift);
@@ -1415,12 +1212,12 @@
     document.getElementById('btnToggleBgm').addEventListener('click', function() {
       ensureAudio();
       bgmOn = !bgmOn;
-      this.textContent = bgmOn ? '🎵 輕快音樂: 開' : '🔇 輕快音樂: 關';
+      this.textContent = bgmOn ? '🎵 音樂' : '🔇 音樂'; this.classList.toggle('on', bgmOn);
       if (bgmOn) startBgmLoop();
       else stopBgmLoop();
     });
 
-    document.getElementById('btnSwitchBgmStyle').addEventListener('click', function() {
+    const _sw = document.getElementById('btnSwitchBgmStyle'); _sw && _sw.addEventListener('click', function() {
       ensureAudio();
       bgmStyleIdx = (bgmStyleIdx + 1) % BGM_STYLES.length;
       this.textContent = BGM_STYLES[bgmStyleIdx].label;
@@ -1431,7 +1228,7 @@
     document.getElementById('btnToggleSfx').addEventListener('click', function() {
       ensureAudio();
       sfxOn = !sfxOn;
-      this.textContent = sfxOn ? '🫧 泡泡音: 開' : '🔕 泡泡音: 關';
+      this.textContent = sfxOn ? '🫧 音效' : '🔕 音效'; this.classList.toggle('on', sfxOn);
       if (sfxOn) sfxTestFive();
     });
 
