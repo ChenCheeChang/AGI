@@ -129,6 +129,7 @@
     }
     .util-btn:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(0,0,0,0.2); }
     .util-bgm { background: #1E7A4A; color: #fff; }
+    .util-style { background: #2D6A4F; color: #FDE68A; border: 1px solid rgba(255,255,255,0.2); }
     .util-sfx { background: #0E7490; color: #fff; }
     .util-test { background: #D97706; color: #fff; }
     .util-help { background: #fff; color: #1E5636; width: 28px; height: 28px; justify-content: center; padding: 0; border-radius: 50%; }
@@ -178,8 +179,8 @@
       width: auto !important;
       height: auto !important;
       border-radius: 8px;
-      image-rendering: pixelated;
       cursor: pointer;
+      touch-action: none;
     }
     /* 浮動泡泡粒子容器 */
     .bubble-layer {
@@ -192,14 +193,40 @@
     .bubble {
       position: absolute;
       border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.85), rgba(180,230,255,0.35) 60%, rgba(100,180,255,0.15));
-      box-shadow: inset 0 0 4px rgba(255,255,255,0.6), 0 0 6px rgba(150,220,255,0.4);
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(180,235,255,0.4) 60%, rgba(100,190,255,0.18));
+      box-shadow: inset 0 0 4px rgba(255,255,255,0.75), 0 0 6px rgba(150,220,255,0.45);
       animation: rise linear forwards;
       pointer-events: none;
     }
     @keyframes rise {
-      0% { transform: translateY(0) scale(1); opacity: 0.9; }
-      100% { transform: translateY(-120px) scale(0.4); opacity: 0; }
+      0% { transform: translateY(0) scale(0.85); opacity: 0.95; }
+      70% { transform: translateY(-85px) scale(1.1); opacity: 0.85; }
+      100% { transform: translateY(-130px) scale(1.25); opacity: 0; }
+    }
+
+    /* 消行休假慶祝浮動橫幅 */
+    .celebration-toast {
+      position: absolute;
+      top: 38%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.85);
+      background: rgba(251, 191, 36, 0.96);
+      color: #3A241B;
+      font-weight: 900;
+      font-size: 16px;
+      padding: 8px 18px;
+      border-radius: 16px;
+      border: 3px solid #FFFFFF;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 30;
+    }
+    .celebration-toast.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
     }
 
     .info-strip {
@@ -352,6 +379,7 @@
       align-items: center;
       justify-content: center;
       transition: transform 0.08s, box-shadow 0.08s;
+      touch-action: manipulation;
     }
     .pad-btn:active {
       transform: translateY(3px);
@@ -385,10 +413,11 @@
       gap: 6px;
       box-shadow: 0 3px 0 rgba(0,0,0,0.25);
       transition: transform 0.08s;
+      touch-action: manipulation;
     }
     .action-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.25); }
     .btn-drop {
-      background: linear-gradient(180deg, #94A3B8, #64748B);
+      background: linear-gradient(180deg, #7393B3, #52718F);
       color: #fff;
     }
     .btn-hold {
@@ -398,8 +427,9 @@
     .hint {
       text-align: center;
       font-size: 10px;
-      color: rgba(255,255,255,0.55);
+      color: rgba(255,255,255,0.65);
       margin-top: 4px;
+      font-weight: 700;
     }
 
     .overlay {
@@ -502,8 +532,9 @@
     </div>
 
     <div class="utility-row">
-      <button class="util-btn util-bgm" id="btnToggleBgm" type="button">🎵 音樂: 開</button>
-      <button class="util-btn util-sfx" id="btnToggleSfx" type="button">🫧 音效: 開</button>
+      <button class="util-btn util-bgm" id="btnToggleBgm" type="button">🎵 輕快音樂: 開</button>
+      <button class="util-btn util-style" id="btnSwitchBgmStyle" type="button">🎶 曲風: 泡泡派對</button>
+      <button class="util-btn util-sfx" id="btnToggleSfx" type="button">🫧 泡泡音: 開</button>
       <button class="util-btn util-test" id="btnTestBubble" type="button">🫧 啵啵試聽</button>
       <button class="util-btn util-help" id="btnHelp" type="button">?</button>
     </div>
@@ -516,9 +547,10 @@
       <div class="board-well" id="boardWell">
         <canvas id="gameCanvas" width="300" height="540"></canvas>
         <div class="bubble-layer" id="bubbleLayer"></div>
+        <div class="celebration-toast" id="celebrationToast">🏖️ 休假囉！啵啵！</div>
         <div class="overlay" id="startOverlay">
           <h1>LINE FRIENDS 日曆方塊</h1>
-          <p>堆疊可愛樂高凸點「日期方塊」與「圖示方塊」，湊滿整行即可翻轉為「休」字放假積木！</p>
+          <p>堆疊可愛樂高凸點「日期方塊」與「圖示方塊」，湊滿整行即可翻轉為「休」字放假積木並觸發啵啵泡泡音！</p>
           <button class="start-btn" id="btnStart">▶️ 開始堆疊日曆</button>
         </div>
       </div>
@@ -530,7 +562,7 @@
         </div>
         <div class="info-card">
           <div class="info-label">HOLD 暫存</div>
-          <div class="mini-well"><canvas id="holdCanvas" width="52" height="52"></canvas></div>
+          <div class="mini-well" id="holdWellBox" style="cursor:pointer;"><canvas id="holdCanvas" width="52" height="52"></canvas></div>
         </div>
         <div class="info-card">
           <div class="info-label">SCORE 分數</div>
@@ -564,7 +596,7 @@
         <button class="pad-btn pad-pause" id="btnPause" type="button">⏸</button>
       </div>
       <div class="action-row">
-        <button class="action-btn btn-drop" id="btnDrop" type="button">⏬ 直接落地</button>
+        <button class="action-btn btn-drop" id="btnDrop" type="button">⏬ 啵啵直接落地</button>
         <button class="action-btn btn-hold" id="btnHold" type="button">📦 HOLD</button>
       </div>
       <div class="hint">手機也可在畫面滑動：←→移動 ↑旋轉 ↓加速 點擊旋轉</div>
@@ -575,138 +607,287 @@
     <div class="modal-card">
       <h2>🧸 遊戲玩法與音效說明</h2>
       <ul>
-        <li><strong>樂高積木外觀</strong>：白色日期方塊 (1~31、休) 與四色可愛圖示方塊。</li>
-        <li><strong>「休」字慶祝</strong>：湊滿整行會翻轉成「休」字放假積木，伴隨泡泡與慶祝動畫。</li>
-        <li><strong>熊大技能</strong>：B 鍵消一行、G 鍵召喚休假塊。</li>
-        <li><strong>Q 彈泡泡音效</strong>：左右移動＝清脆單顆水泡、旋轉＝雙連音啵啵、硬降＝飽滿氣泡濺起、試聽＝五連音氣泡＋浮動粒子。</li>
-        <li><strong>鍵盤</strong>：←→移動、↑/Z 旋轉、↓加速、空白硬降、C 暫存、P 暫停。</li>
-        <li><strong>手機</strong>：底部按鈕或畫面滑動 / 點擊。</li>
+        <li><strong>樂高積木外觀</strong>：白色日期方塊 (1~31、休) 與四色可愛圖示方塊（兔兔、熊大、莎莉、仙人掌、冰淇淋、小花、盆栽、嫩芽）。</li>
+        <li><strong>「休」字慶祝</strong>：湊滿整行會先閃耀翻轉成金黃色「休」字放假積木，伴隨清脆水泡與慶祝動畫。</li>
+        <li><strong>熊大技能</strong>：B 鍵直接把最底層變成「休」字消除、G 鍵召喚單格百搭「🎁 休假禮盒」。</li>
+        <li><strong>Q 彈泡泡音效</strong>：模擬真實水滴氣泡由低往高頻率收縮的「啵啵聲 (Bloop & Pop)」。</li>
+        <li><strong>輕快有趣背景音樂</strong>：內建三首輕快木琴泡泡旋律（泡泡派對／午後散步／莎莉嘉年華），可隨時切換！</li>
+        <li><strong>操作方式</strong>：手機底部零延遲大按鈕或畫面滑動；電腦支援 ←→移動、↑/Z旋轉、↓加速、空白鍵落地、C暫存。</li>
       </ul>
       <button class="close-modal" id="btnCloseHelp">知道了，繼續遊戲！</button>
     </div>
   </div>
 
   <script>
-    // ========== Q 彈泡泡聲效系統 (Sine Pitch Sweep) ==========
+    // =========================================================================
+    // 1. Q彈水滴泡泡音效 + 輕快有趣木琴背景音樂合成器 (Web Audio API)
+    // =========================================================================
     let audioCtx = null;
     let sfxOn = true;
     let bgmOn = true;
+    let bgmTimer = null;
+    let bgmStep = 0;
+
+    const BGM_STYLES = [
+      { key: 'party',    label: '🎶 曲風: 泡泡派對' },
+      { key: 'stroll',   label: '🎶 曲風: 午後散步' },
+      { key: 'carnival', label: '🎶 曲風: 莎莉嘉年華' }
+    ];
+    let bgmStyleIdx = 0;
 
     function ensureAudio() {
       if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) audioCtx = new AudioContextClass();
       }
-      if (audioCtx.state === 'suspended') {
+      if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
       return audioCtx;
     }
 
     /**
-     * 核心：水滴氣泡聲學滑音 (Sine Pitch Sweep)
-     * @param {number} startFreq 起始頻率
-     * @param {number} endFreq   結束頻率
-     * @param {number} duration  持續時間 (秒)
-     * @param {number} volume    音量 0~1
-     * @param {number} delay     延遲 (秒)
+     * 核心：真實水滴氣泡聲學滑音 (Upward Sine Pitch Sweep + 泛音)
+     * 真實水泡在破裂前共振腔縮小，頻率是由低往高指數上滑（Bloop!）
      */
-    function playBubbleSweep(startFreq, endFreq, duration = 0.12, volume = 0.22, delay = 0) {
+    function playBubbleSweep(startFreq, endFreq, duration = 0.075, volume = 0.24, delay = 0) {
       if (!sfxOn) return;
       try {
         const ctx = ensureAudio();
+        if (!ctx) return;
         const t0 = ctx.currentTime + delay;
 
-        // 主振盪器 (Sine)
         const osc = ctx.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(startFreq, t0);
-        osc.frequency.exponentialRampToValueAtTime(Math.max(endFreq, 40), t0 + duration);
-
-        // 增益包絡 (快速攻擊 + 自然衰減，模擬氣泡破裂)
+        const subOsc = ctx.createOscillator();
         const gain = ctx.createGain();
-        gain.gain.setValueAtTime(0, t0);
-        gain.gain.linearRampToValueAtTime(volume, t0 + 0.008);
-        gain.gain.exponentialRampToValueAtTime(0.001, t0 + duration);
+        const subGain = ctx.createGain();
 
-        // 輕微高頻濾波讓聲音更「水」
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(2800, t0);
-        filter.Q.value = 0.7;
+        // 主水泡正弦波：由低往高急速滑音
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(Math.max(40, startFreq), t0);
+        osc.frequency.exponentialRampToValueAtTime(Math.max(60, endFreq), t0 + duration);
 
-        osc.connect(filter);
-        filter.connect(gain);
+        // 1.5倍頻三角波泛音：增加卡通水珠的晶瑩光澤感
+        subOsc.type = 'triangle';
+        subOsc.frequency.setValueAtTime(Math.max(60, startFreq * 1.5), t0);
+        subOsc.frequency.exponentialRampToValueAtTime(Math.max(90, endFreq * 1.5), t0 + duration);
+
+        subGain.gain.setValueAtTime(0.16, t0);
+        subGain.gain.exponentialRampToValueAtTime(0.001, t0 + duration);
+
+        gain.gain.setValueAtTime(0.001, t0);
+        gain.gain.linearRampToValueAtTime(volume, t0 + duration * 0.2);
+        gain.gain.exponentialRampToValueAtTime(0.0008, t0 + duration);
+
+        osc.connect(gain);
+        subOsc.connect(subGain);
+        subGain.connect(gain);
         gain.connect(ctx.destination);
 
         osc.start(t0);
-        osc.stop(t0 + duration + 0.02);
+        subOsc.start(t0);
+        osc.stop(t0 + duration + 0.015);
+        subOsc.stop(t0 + duration + 0.015);
       } catch (e) {}
     }
 
-    // 左右移動：清脆單顆水泡
+    // 輕快木琴音色 (供背景音樂與消行慶祝和弦使用)
+    function playToyMarimba(freq, duration = 0.15, delay = 0, wave = 'triangle', volume = 0.11) {
+      try {
+        const ctx = ensureAudio();
+        if (!ctx) return;
+        const t0 = ctx.currentTime + delay;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = wave;
+        // 玩具木琴敲擊瞬間微幅高音彈性
+        osc.frequency.setValueAtTime(freq * 1.025, t0);
+        osc.frequency.exponentialRampToValueAtTime(freq, t0 + 0.025);
+
+        gain.gain.setValueAtTime(0.001, t0);
+        gain.gain.linearRampToValueAtTime(volume, t0 + 0.012);
+        gain.gain.exponentialRampToValueAtTime(0.0008, t0 + duration);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t0);
+        osc.stop(t0 + duration + 0.015);
+      } catch (e) {}
+    }
+
+    // 左右移動：清脆單顆水泡 (低->高)
     function sfxMove() {
-      playBubbleSweep(920 + Math.random() * 80, 480, 0.09, 0.18);
+      const base = 330 + Math.random() * 50;
+      playBubbleSweep(base, base * 2.25, 0.06, 0.20, 0);
     }
 
-    // 旋轉：雙連音啵啵
+    // 旋轉：活潑雙連音啵啵 (Bloop-Bip!)
     function sfxRotate() {
-      playBubbleSweep(780, 420, 0.08, 0.16, 0);
-      playBubbleSweep(980, 520, 0.09, 0.14, 0.055);
+      playBubbleSweep(340, 740, 0.055, 0.21, 0);
+      playBubbleSweep(520, 1140, 0.065, 0.23, 0.045);
     }
 
-    // 軟降 / 一般落地：中等氣泡
+    // 軟降 / 一般落地：溫潤水珠聲
     function sfxSoftDrop() {
-      playBubbleSweep(620, 280, 0.11, 0.15);
+      playBubbleSweep(260, 560, 0.055, 0.16, 0);
     }
 
-    // 空白鍵硬降：飽滿氣泡濺起聲 (多層次)
+    // 空白鍵硬降：飽滿深水氣泡 + 三顆上升小氣泡濺起
     function sfxHardDrop() {
-      // 主濺起
-      playBubbleSweep(520, 180, 0.18, 0.28, 0);
-      // 伴隨小氣泡群
-      playBubbleSweep(1100, 600, 0.10, 0.12, 0.03);
-      playBubbleSweep(860, 400, 0.12, 0.10, 0.07);
-      playBubbleSweep(1300, 700, 0.08, 0.08, 0.11);
+      playBubbleSweep(190, 480, 0.085, 0.28, 0);
+      playBubbleSweep(420, 900, 0.06, 0.22, 0.035);
+      playBubbleSweep(560, 1180, 0.06, 0.20, 0.07);
+      playBubbleSweep(720, 1460, 0.055, 0.18, 0.105);
     }
 
-    // 消行：清脆連發
+    // 消行：晶瑩八連音泡泡音階 + 歡樂木琴大三和弦
     function sfxLineClear(count = 1) {
-      for (let i = 0; i < count; i++) {
-        playBubbleSweep(700 + i * 120, 350 + i * 60, 0.13, 0.20, i * 0.06);
+      const scale = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66, 1318.5];
+      const total = Math.min(8, 4 + count);
+      for (let i = 0; i < total; i++) {
+        const f = scale[i % scale.length];
+        playBubbleSweep(f * 0.65, f * 1.45, 0.075, 0.24, i * 0.042);
+      }
+      if (sfxOn) {
+        [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+          playToyMarimba(freq, 0.26, idx * 0.055, 'triangle', 0.14);
+        });
       }
     }
 
-    // 啵啵試聽：五連音氣泡 + 畫面粒子
+    // 啵啵試聽：五連音階梯氣泡 + 畫面浮動泡泡粒子
     function sfxTestFive() {
-      const base = [680, 820, 960, 1120, 1280];
-      base.forEach((f, i) => {
-        playBubbleSweep(f, f * 0.48, 0.11, 0.20, i * 0.085);
+      const pitches = [300, 390, 500, 640, 820];
+      pitches.forEach((p, i) => {
+        playBubbleSweep(p, p * 2.2, 0.072, 0.25, i * 0.06);
       });
-      // 觸發浮動泡泡粒子
-      spawnBubbleParticles(12);
+      spawnBubbleParticles(14);
+    }
+
+    // ========== 輕快有趣背景音樂 Sequencer ==========
+    const NOTES = {
+      C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
+      C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
+      C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, C6: 1046.50
+    };
+
+    const BGM_PATTERNS = {
+      party: {
+        lead: [
+          NOTES.E5, 0, NOTES.G5, NOTES.E5, NOTES.C5, 0, NOTES.D5, 0,
+          NOTES.E5, NOTES.G5, NOTES.A5, NOTES.G5, NOTES.E5, 0, NOTES.G5, 0,
+          NOTES.F5, 0, NOTES.A5, NOTES.F5, NOTES.D5, 0, NOTES.G5, 0,
+          NOTES.E5, NOTES.D5, NOTES.C5, NOTES.D5, NOTES.E5, NOTES.G5, NOTES.C6, 0
+        ],
+        bass: [
+          NOTES.C3, 0, NOTES.G3, 0, NOTES.C3, 0, NOTES.G3, 0,
+          NOTES.A3, 0, NOTES.E3, 0, NOTES.A3, 0, NOTES.E3, 0,
+          NOTES.F3, 0, NOTES.C4, 0, NOTES.G3, 0, NOTES.D4, 0,
+          NOTES.C3, 0, NOTES.G3, 0, NOTES.C4, 0, NOTES.G3, 0
+        ]
+      },
+      stroll: {
+        lead: [
+          NOTES.G5, 0, NOTES.E5, 0, NOTES.C5, NOTES.D5, NOTES.E5, 0,
+          NOTES.A5, 0, NOTES.G5, 0, NOTES.E5, 0, NOTES.D5, 0,
+          NOTES.F5, 0, NOTES.E5, 0, NOTES.D5, NOTES.E5, NOTES.G5, 0,
+          NOTES.E5, 0, NOTES.D5, 0, NOTES.C5, 0, 0, 0
+        ],
+        bass: [
+          NOTES.C3, 0, 0, NOTES.G3, NOTES.C3, 0, NOTES.G3, 0,
+          NOTES.F3, 0, 0, NOTES.C4, NOTES.F3, 0, NOTES.C4, 0,
+          NOTES.G3, 0, 0, NOTES.D4, NOTES.G3, 0, NOTES.D4, 0,
+          NOTES.C3, 0, NOTES.G3, 0, NOTES.C4, 0, 0, 0
+        ]
+      },
+      carnival: {
+        lead: [
+          NOTES.C5, NOTES.E5, NOTES.G5, NOTES.E5, NOTES.A5, NOTES.G5, NOTES.E5, NOTES.C5,
+          NOTES.D5, NOTES.F5, NOTES.A5, NOTES.F5, NOTES.G5, 0, NOTES.G5, 0,
+          NOTES.E5, NOTES.G5, NOTES.C6, NOTES.G5, NOTES.A5, NOTES.F5, NOTES.D5, NOTES.F5,
+          NOTES.E5, NOTES.G5, NOTES.D5, NOTES.B4, NOTES.C5, 0, NOTES.C6, 0
+        ],
+        bass: [
+          NOTES.C3, NOTES.G3, NOTES.C3, NOTES.G3, NOTES.F3, NOTES.C4, NOTES.F3, NOTES.C4,
+          NOTES.D3, NOTES.A3, NOTES.D3, NOTES.A3, NOTES.G3, NOTES.D4, NOTES.G3, NOTES.D4,
+          NOTES.C3, NOTES.G3, NOTES.E3, NOTES.G3, NOTES.F3, NOTES.C4, NOTES.D3, NOTES.A3,
+          NOTES.G3, NOTES.D4, NOTES.G3, NOTES.B3, NOTES.C4, 0, NOTES.C3, 0
+        ]
+      }
+    };
+
+    function tickBgmSequencer() {
+      if (!bgmOn || paused) return;
+      const ctx = ensureAudio();
+      if (!ctx || ctx.state === 'suspended') return;
+
+      const styleKey = BGM_STYLES[bgmStyleIdx].key;
+      const pat = BGM_PATTERNS[styleKey] || BGM_PATTERNS.party;
+      const step = bgmStep % 32;
+      const lead = pat.lead[step];
+      const bass = pat.bass[step];
+
+      if (lead) {
+        playToyMarimba(lead, 0.14, 0, 'triangle', 0.095);
+        playToyMarimba(lead * 2, 0.075, 0, 'sine', 0.032);
+      }
+      if (bass) {
+        playToyMarimba(bass, 0.16, 0, 'sine', 0.11);
+      }
+      // 每隔 4 拍加入一個極輕巧的背景水泡節奏點，讓旋律更俏皮
+      if (step % 4 === 2 && sfxOn) {
+        playBubbleSweep(480, 860, 0.032, 0.055, 0);
+      }
+      bgmStep = (bgmStep + 1) % 32;
+    }
+
+    function startBgmLoop() {
+      ensureAudio();
+      if (bgmTimer) clearInterval(bgmTimer);
+      bgmTimer = setInterval(tickBgmSequencer, 165);
+    }
+
+    function stopBgmLoop() {
+      if (bgmTimer) {
+        clearInterval(bgmTimer);
+        bgmTimer = null;
+      }
     }
 
     // 畫面浮動泡泡粒子
     function spawnBubbleParticles(count = 8) {
       const layer = document.getElementById('bubbleLayer');
       if (!layer) return;
-      const rect = layer.getBoundingClientRect();
       for (let i = 0; i < count; i++) {
         const b = document.createElement('div');
         b.className = 'bubble';
-        const size = 8 + Math.random() * 18;
+        const size = 9 + Math.random() * 18;
         b.style.width = size + 'px';
         b.style.height = size + 'px';
-        b.style.left = (Math.random() * 90 + 5) + '%';
-        b.style.bottom = (Math.random() * 30) + '%';
-        b.style.animationDuration = (0.9 + Math.random() * 1.1) + 's';
-        b.style.animationDelay = (Math.random() * 0.25) + 's';
+        b.style.left = (Math.random() * 88 + 6) + '%';
+        b.style.bottom = (Math.random() * 35 + 5) + '%';
+        b.style.animationDuration = (0.85 + Math.random() * 1.0) + 's';
+        b.style.animationDelay = (Math.random() * 0.2) + 's';
         layer.appendChild(b);
-        setTimeout(() => b.remove(), 2200);
+        setTimeout(() => b.remove(), 2100);
       }
     }
 
-    // ========== 遊戲核心 ==========
+    function showCelebrationToast(text) {
+      const toast = document.getElementById('celebrationToast');
+      if (!toast) return;
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(showCelebrationToast._t);
+      showCelebrationToast._t = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 1350);
+    }
+
+    // =========================================================================
+    // 2. 遊戲核心 (立體樂高日曆方塊 + 「休」字翻轉動畫)
+    // =========================================================================
     const COLS = 10, ROWS = 18;
     let CELL = 30;
     const canvas = document.getElementById('gameCanvas');
@@ -725,13 +906,24 @@
       J: [[1,0,0],[1,1,1]],
       L: [[0,0,1],[1,1,1]]
     };
-    const COLORS = ['#F7F6F0','#3A241B','#D9822B','#7393B3','#2F7D53','#E07A5F','#81B29A'];
-    const ICONS = ['🐰','🐻','🐥','🌵','🍦','🌸','🪴','🌱'];
 
-    let board = Array.from({length: ROWS}, () => Array(COLS).fill(0));
+    const ICON_THEMES = [
+      { color: '#D9822B', text: '#FFFFFF', icon: '🐰' },
+      { color: '#3A241B', text: '#FCD34D', icon: '🐻' },
+      { color: '#7393B3', text: '#FFFFFF', icon: '🐥' },
+      { color: '#2F7D53', text: '#FFFFFF', icon: '🌵' },
+      { color: '#D9822B', text: '#FFFFFF', icon: '🍦' },
+      { color: '#3A241B', text: '#FCD34D', icon: '🌸' },
+      { color: '#7393B3', text: '#FFFFFF', icon: '🪴' },
+      { color: '#2F7D53', text: '#FFFFFF', icon: '🌱' }
+    ];
+
+    let board = Array.from({length: ROWS}, () => Array(COLS).fill(null));
     let current = null, next = null, hold = null, canHold = true;
+    let dateCounter = 1;
     let score = 0, lines = 0, level = 1, energy = 100;
     let dropInterval = 800, lastDrop = 0, paused = false, gameOver = false, started = false;
+    let isClearingAnim = false;
     let best = parseInt(localStorage.getItem('lf_calendar_best') || '0', 10);
 
     function resizeCanvas() {
@@ -747,13 +939,35 @@
       draw();
     }
 
+    function createCellTile(forceDateMode, themePick) {
+      if (Math.random() < 0.12) {
+        return { color: '#FFF3C4', textColor: '#C83E2B', label: '休', isHoliday: true };
+      }
+      if (forceDateMode) {
+        const d = dateCounter;
+        dateCounter = (dateCounter % 31) + 1;
+        return { color: '#F7F6F0', textColor: '#3A241B', label: String(d), isDate: true };
+      }
+      return { color: themePick.color, textColor: themePick.text, label: themePick.icon, isIcon: true };
+    }
+
     function randomPiece() {
       const keys = Object.keys(SHAPES);
       const type = keys[Math.floor(Math.random() * keys.length)];
-      const shape = SHAPES[type].map(r => [...r]);
-      const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-      const icon = ICONS[Math.floor(Math.random() * ICONS.length)];
-      return { shape, color, icon, type, x: Math.floor((COLS - shape[0].length)/2), y: 0 };
+      const rawShape = SHAPES[type];
+      const useDateMode = Math.random() < 0.52;
+      const themePick = ICON_THEMES[Math.floor(Math.random() * ICON_THEMES.length)];
+
+      const shape = rawShape.map(row =>
+        row.map(v => (v ? createCellTile(useDateMode, themePick) : null))
+      );
+
+      return {
+        shape,
+        type,
+        x: Math.floor((COLS - shape[0].length) / 2),
+        y: 0
+      };
     }
 
     function collide(piece, dx=0, dy=0, rot=null) {
@@ -775,43 +989,88 @@
       for (let r=0; r<s.length; r++) {
         for (let c=0; c<s[r].length; c++) {
           if (s[r][c] && current.y + r >= 0) {
-            board[current.y + r][current.x + c] = { color: current.color, icon: current.icon };
+            const by = current.y + r;
+            const bx = current.x + c;
+            board[by][bx] = s[r][c];
+            // 熊大休假禮盒落地時，將上下左右相鄰方塊也染成「休」字積木！
+            if (current.type === 'GIFT') {
+              [[0,1],[0,-1],[1,0],[-1,0]].forEach(([dr, dc]) => {
+                const nr = by + dr, nc = bx + dc;
+                if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && board[nr][nc]) {
+                  board[nr][nc] = { color: '#FFF3C4', textColor: '#C83E2B', label: '休', isHoliday: true };
+                }
+              });
+            }
           }
         }
       }
     }
 
-    function clearLines() {
-      let cleared = 0;
-      for (let r = ROWS-1; r >= 0; r--) {
-        if (board[r].every(cell => cell)) {
-          board.splice(r, 1);
-          board.unshift(Array(COLS).fill(0));
-          cleared++;
-          r++;
+    function checkAndClearLines() {
+      const fullRows = [];
+      for (let r = 0; r < ROWS; r++) {
+        if (board[r].every(cell => cell !== null)) {
+          fullRows.push(r);
         }
       }
-      if (cleared) {
+
+      if (fullRows.length === 0) {
+        spawn();
+        return;
+      }
+
+      // 整排先翻轉為金黃色「休」字放假積木並播放慶祝泡泡音！
+      isClearingAnim = true;
+      fullRows.forEach(r => {
+        for (let c = 0; c < COLS; c++) {
+          board[r][c] = { color: '#FFF3C4', textColor: '#C83E2B', label: '休', isHoliday: true };
+        }
+      });
+
+      const cleared = fullRows.length;
+      sfxLineClear(cleared);
+      spawnBubbleParticles(8 + cleared * 4);
+      const msgs = ['', '🏖️ 休假 +1 天！啵啵！', '🎉 雙連休 DOUBLE 放假！', '✨ 三連休 TRIPLE 假期！', '👑 四連休黃金週 TETRIS！'];
+      showCelebrationToast(msgs[cleared] || msgs[4]);
+      draw();
+
+      setTimeout(() => {
+        board = board.filter((_, idx) => !fullRows.includes(idx));
+        while (board.length < ROWS) {
+          board.unshift(Array(COLS).fill(null));
+        }
+
         lines += cleared;
-        score += [0,100,300,500,800][cleared] * level;
-        energy = Math.min(100, energy + cleared * 15);
+        score += ([0, 150, 400, 800, 1600][cleared] || 1600) * level;
+        level = Math.min(15, 1 + Math.floor(lines / 5));
+        dropInterval = Math.max(150, 800 - (level - 1) * 48);
+        energy = Math.min(100, energy + cleared * 20);
+
         document.getElementById('linesVal').textContent = lines;
         document.getElementById('scoreVal').textContent = score;
+        document.getElementById('levelVal').textContent = 'Lv.' + level;
         document.getElementById('vacationDays').textContent = lines;
         updateEnergy();
+
         if (score > best) {
           best = score;
           localStorage.setItem('lf_calendar_best', best);
         }
-        sfxLineClear(cleared);
-        spawnBubbleParticles(6 + cleared * 3);
-      }
+
+        isClearingAnim = false;
+        spawn();
+        draw();
+      }, 360);
     }
 
-    function rotate(shape) {
+    function rotateMatrix(shape) {
       const N = shape.length, M = shape[0].length;
-      const res = Array.from({length: M}, () => Array(N).fill(0));
-      for (let r=0; r<N; r++) for (let c=0; c<M; c++) res[c][N-1-r] = shape[r][c];
+      const res = Array.from({length: M}, () => Array(N).fill(null));
+      for (let r=0; r<N; r++) {
+        for (let c=0; c<M; c++) {
+          res[c][N-1-r] = shape[r][c];
+        }
+      }
       return res;
     }
 
@@ -822,16 +1081,18 @@
       if (collide(current)) {
         gameOver = true;
         started = false;
+        document.body.classList.remove('playing');
         document.getElementById('startOverlay').style.display = 'flex';
-        document.getElementById('startOverlay').querySelector('h1').textContent = '遊戲結束';
-        document.getElementById('startOverlay').querySelector('p').textContent = `分數 ${score} · 最高 ${best}`;
-        document.getElementById('btnStart').textContent = '再玩一次';
+        document.getElementById('startOverlay').querySelector('h1').textContent = '📅 本月日曆堆滿囉！';
+        document.getElementById('startOverlay').querySelector('p').textContent = `累積休假 ${lines} 天 · 分數 ${score} · 最高 ${best}`;
+        document.getElementById('btnStart').textContent = '🔄 再玩一局';
       }
       drawNext();
     }
 
     function holdPiece() {
-      if (!canHold || !current) return;
+      if (!canHold || !current || paused || isClearingAnim) return;
+      ensureAudio();
       if (!hold) {
         hold = current;
         spawn();
@@ -844,21 +1105,29 @@
       }
       canHold = false;
       drawHold();
-      sfxMove();
+      sfxRotate();
+      draw();
     }
 
     function hardDrop() {
-      if (!current || paused) return;
-      while (!collide(current, 0, 1)) current.y++;
+      if (!current || paused || isClearingAnim) return;
+      ensureAudio();
+      let dropped = 0;
+      while (!collide(current, 0, 1)) {
+        current.y++;
+        dropped++;
+      }
+      score += dropped * 2;
+      document.getElementById('scoreVal').textContent = score;
       merge();
-      clearLines();
-      spawn();
       sfxHardDrop();
       spawnBubbleParticles(10);
+      checkAndClearLines();
+      draw();
     }
 
     function softDrop() {
-      if (!current || paused) return;
+      if (!current || paused || isClearingAnim) return;
       if (!collide(current, 0, 1)) {
         current.y++;
         score += 1;
@@ -866,160 +1135,213 @@
         sfxSoftDrop();
       } else {
         merge();
-        clearLines();
-        spawn();
         sfxSoftDrop();
+        checkAndClearLines();
       }
+      draw();
     }
 
     function move(dx) {
-      if (!current || paused) return;
+      if (!current || paused || isClearingAnim) return;
+      ensureAudio();
       if (!collide(current, dx, 0)) {
         current.x += dx;
         sfxMove();
+        spawnBubbleParticles(2);
+        draw();
       }
     }
 
     function doRotate() {
-      if (!current || paused) return;
-      const rotated = rotate(current.shape);
-      if (!collide(current, 0, 0, rotated)) {
-        current.shape = rotated;
-        sfxRotate();
+      if (!current || paused || isClearingAnim) return;
+      ensureAudio();
+      const rotated = rotateMatrix(current.shape);
+      const kicks = [0, -1, 1, -2, 2];
+      for (const k of kicks) {
+        if (!collide(current, k, 0, rotated)) {
+          current.shape = rotated;
+          current.x += k;
+          sfxRotate();
+          spawnBubbleParticles(4);
+          draw();
+          return;
+        }
       }
     }
 
     function updateEnergy() {
       document.getElementById('energyFill').style.width = energy + '%';
-      document.getElementById('energyPct').textContent = energy >= 100 ? '100% READY!' : energy + '%';
+      document.getElementById('energyPct').textContent = energy >= 50 ? `${energy}% READY!` : `${energy}% 充能中`;
     }
 
+    // 熊大技能 B：直接將最底層有方塊的那一行變成「休」字消除！
     function brownClearLine() {
-      if (energy < 50 || !started || paused) return;
+      if (!started || paused || isClearingAnim) return;
+      ensureAudio();
+      if (energy < 50) {
+        showCelebrationToast('🐻 能量滿 50% 才能幫消一行喔！');
+        sfxMove();
+        return;
+      }
       energy -= 50;
       updateEnergy();
-      board.pop();
-      board.unshift(Array(COLS).fill(0));
-      lines++;
-      score += 200 * level;
-      document.getElementById('linesVal').textContent = lines;
-      document.getElementById('scoreVal').textContent = score;
-      document.getElementById('vacationDays').textContent = lines;
-      sfxLineClear(1);
-      spawnBubbleParticles(8);
+
+      let targetRow = ROWS - 1;
+      for (let r = ROWS - 1; r >= 0; r--) {
+        if (board[r].some(c => c !== null)) {
+          targetRow = r;
+          break;
+        }
+      }
+      for (let c = 0; c < COLS; c++) {
+        board[targetRow][c] = { color: '#FFF3C4', textColor: '#C83E2B', label: '休', isHoliday: true };
+      }
+      checkAndClearLines();
     }
 
+    // 熊大技能 G：召喚單格百搭「休」字禮盒
     function brownGift() {
-      if (energy < 30 || !started || paused) return;
+      if (!started || paused || isClearingAnim) return;
+      ensureAudio();
+      if (energy < 30) {
+        showCelebrationToast('🎁 能量滿 30% 可召喚休假禮盒！');
+        sfxMove();
+        return;
+      }
       energy -= 30;
       updateEnergy();
       next = {
-        shape: [[1]],
-        color: '#FBBF24',
-        icon: '🎁',
+        shape: [[{ color: '#FFF3C4', textColor: '#C83E2B', label: '🎁', isHoliday: true }]],
         type: 'GIFT',
-        x: 4, y: 0
+        x: 4,
+        y: 0
       };
       drawNext();
       sfxRotate();
+      showCelebrationToast('🎁 下一個是百搭休假禮盒！');
     }
 
-    function drawBlock(ctx, x, y, size, color, icon) {
-      ctx.fillStyle = color;
-      ctx.beginPath();
-      ctx.roundRect(x+1, y+1, size-2, size-2, 4);
-      ctx.fill();
-      ctx.fillStyle = 'rgba(255,255,255,0.25)';
-      ctx.beginPath();
-      ctx.roundRect(x+2, y+2, size-4, size/3, 2);
-      ctx.fill();
-      const studR = size * 0.18;
-      ctx.fillStyle = 'rgba(255,255,255,0.35)';
-      ctx.beginPath();
-      ctx.arc(x + size/2, y + size*0.38, studR, 0, Math.PI*2);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(0,0,0,0.15)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      if (icon && size > 16) {
-        ctx.font = `${Math.floor(size*0.45)}px serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(icon, x + size/2, y + size*0.72);
+    // 繪製立體樂高凸點日曆方塊
+    function drawLegoBlock(targetCtx, x, y, size, cellData) {
+      if (!cellData) return;
+      const color = cellData.color || '#F7F6F0';
+      const textColor = cellData.textColor || '#3A241B';
+      const label = cellData.label;
+
+      // 頂部樂高圓柱凸點 (Stud)
+      const studW = size * 0.46;
+      const studH = Math.max(2.5, size * 0.13);
+      targetCtx.fillStyle = color;
+      targetCtx.beginPath();
+      targetCtx.roundRect(x + (size - studW) / 2, y + 0.5, studW, studH + 2, [2, 2, 0, 0]);
+      targetCtx.fill();
+
+      // 主方塊圓角本體
+      const bodyY = y + studH * 0.85;
+      const bodyH = size - studH * 0.85 - 1;
+      targetCtx.fillStyle = color;
+      targetCtx.beginPath();
+      targetCtx.roundRect(x + 1, bodyY, size - 2, bodyH, 4.5);
+      targetCtx.fill();
+
+      // 3D 高光與陰影邊框
+      targetCtx.strokeStyle = 'rgba(0,0,0,0.22)';
+      targetCtx.lineWidth = 1.2;
+      targetCtx.stroke();
+
+      targetCtx.fillStyle = 'rgba(255,255,255,0.32)';
+      targetCtx.beginPath();
+      targetCtx.roundRect(x + 2.5, bodyY + 1.5, size - 5, bodyH * 0.28, 2);
+      targetCtx.fill();
+
+      // 繪製日期數字、「休」字或角色圖示
+      if (label && size >= 15) {
+        targetCtx.fillStyle = textColor;
+        const fontSize = cellData.isHoliday || cellData.isDate
+          ? Math.floor(size * 0.44)
+          : Math.floor(size * 0.46);
+        targetCtx.font = `900 ${fontSize}px "Fredoka", "Noto Sans TC", sans-serif`;
+        targetCtx.textAlign = 'center';
+        targetCtx.textBaseline = 'middle';
+        targetCtx.fillText(label, x + size / 2, bodyY + bodyH * 0.54);
       }
     }
 
     function draw() {
       ctx.fillStyle = '#153B25';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 樂高底板格線與圓形凹槽
       ctx.strokeStyle = 'rgba(255,255,255,0.04)';
       ctx.lineWidth = 1;
-      for (let c=0; c<=COLS; c++) {
-        ctx.beginPath(); ctx.moveTo(c*CELL, 0); ctx.lineTo(c*CELL, ROWS*CELL); ctx.stroke();
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const x = c * CELL, y = r * CELL;
+          ctx.strokeRect(x + 0.5, y + 0.5, CELL - 1, CELL - 1);
+          if (!board[r][c]) {
+            ctx.beginPath();
+            ctx.arc(x + CELL/2, y + CELL/2 + 1, CELL * 0.16, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0,0,0,0.18)';
+            ctx.fill();
+          }
+        }
       }
-      for (let r=0; r<=ROWS; r++) {
-        ctx.beginPath(); ctx.moveTo(0, r*CELL); ctx.lineTo(COLS*CELL, r*CELL); ctx.stroke();
-      }
+
+      // 已鎖定的日曆積木
       for (let r=0; r<ROWS; r++) {
         for (let c=0; c<COLS; c++) {
           if (board[r][c]) {
-            drawBlock(ctx, c*CELL, r*CELL, CELL, board[r][c].color, board[r][c].icon);
+            drawLegoBlock(ctx, c*CELL, r*CELL, CELL, board[r][c]);
           }
         }
       }
-      if (current) {
+
+      // 當前下落方塊與落地影子 (Ghost)
+      if (current && !isClearingAnim) {
         const s = current.shape;
-        for (let r=0; r<s.length; r++) {
-          for (let c=0; c<s[r].length; c++) {
-            if (s[r][c]) {
-              drawBlock(ctx, (current.x+c)*CELL, (current.y+r)*CELL, CELL, current.color, current.icon);
-            }
-          }
-        }
         let gy = current.y;
         while (!collide(current, 0, gy - current.y + 1)) gy++;
-        ctx.globalAlpha = 0.25;
+
+        ctx.save();
+        ctx.globalAlpha = 0.22;
         for (let r=0; r<s.length; r++) {
           for (let c=0; c<s[r].length; c++) {
             if (s[r][c]) {
-              drawBlock(ctx, (current.x+c)*CELL, (gy+r)*CELL, CELL, current.color, null);
+              drawLegoBlock(ctx, (current.x+c)*CELL, (gy+r)*CELL, CELL, s[r][c]);
             }
           }
         }
-        ctx.globalAlpha = 1;
-      }
-    }
+        ctx.restore();
 
-    function drawNext() {
-      nextCtx.clearRect(0,0,52,52);
-      if (!next) return;
-      const s = next.shape;
-      const cell = Math.min(20, 48 / Math.max(s.length, s[0].length));
-      const ox = (52 - s[0].length * cell) / 2;
-      const oy = (52 - s.length * cell) / 2;
-      for (let r=0; r<s.length; r++) {
-        for (let c=0; c<s[r].length; c++) {
-          if (s[r][c]) drawBlock(nextCtx, ox + c*cell, oy + r*cell, cell, next.color, next.icon);
+        for (let r=0; r<s.length; r++) {
+          for (let c=0; c<s[r].length; c++) {
+            if (s[r][c]) {
+              drawLegoBlock(ctx, (current.x+c)*CELL, (current.y+r)*CELL, CELL, s[r][c]);
+            }
+          }
         }
       }
     }
 
-    function drawHold() {
-      holdCtx.clearRect(0,0,52,52);
-      if (!hold) return;
-      const s = hold.shape;
-      const cell = Math.min(20, 48 / Math.max(s.length, s[0].length));
+    function drawMiniPreview(targetCtx, piece) {
+      targetCtx.clearRect(0, 0, 52, 52);
+      if (!piece) return;
+      const s = piece.shape;
+      const cell = Math.min(16, 46 / Math.max(s.length, s[0].length));
       const ox = (52 - s[0].length * cell) / 2;
       const oy = (52 - s.length * cell) / 2;
       for (let r=0; r<s.length; r++) {
         for (let c=0; c<s[r].length; c++) {
-          if (s[r][c]) drawBlock(holdCtx, ox + c*cell, oy + r*cell, cell, hold.color, hold.icon);
+          if (s[r][c]) drawLegoBlock(targetCtx, ox + c*cell, oy + r*cell, cell, s[r][c]);
         }
       }
     }
+
+    function drawNext() { drawMiniPreview(nextCtx, next); }
+    function drawHold() { drawMiniPreview(holdCtx, hold); }
 
     function loop(t) {
-      if (started && !paused && !gameOver) {
+      if (started && !paused && !gameOver && !isClearingAnim) {
         if (t - lastDrop > dropInterval) {
           softDrop();
           lastDrop = t;
@@ -1030,88 +1352,146 @@
     }
 
     function startGame() {
-      board = Array.from({length: ROWS}, () => Array(COLS).fill(0));
-      score = 0; lines = 0; level = 1; energy = 100;
+      ensureAudio();
+      sfxTestFive();
+      if (bgmOn) startBgmLoop();
+
+      board = Array.from({length: ROWS}, () => Array(COLS).fill(null));
+      score = 0; lines = 0; level = 1; energy = 100; dateCounter = 1;
+      hold = null; canHold = true; isClearingAnim = false;
       dropInterval = 800; gameOver = false; paused = false; started = true;
+
       document.getElementById('scoreVal').textContent = '0';
       document.getElementById('linesVal').textContent = '0';
       document.getElementById('levelVal').textContent = 'Lv.1';
       document.getElementById('vacationDays').textContent = '0';
+      document.getElementById('btnPause').textContent = '⏸';
       updateEnergy();
+      drawHold();
+
       next = randomPiece();
       spawn();
       document.getElementById('startOverlay').style.display = 'none';
       document.body.classList.add('playing');
       lastDrop = performance.now();
       resizeCanvas();
-      ensureAudio(); // 預先解鎖 AudioContext
     }
 
-    // 事件綁定
+    // 零延遲手機觸控與滑鼠雙綁定輔助函式
+    function bindFastTap(id, handler) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      let lock = false;
+      const invoke = (e) => {
+        if (e.cancelable) e.preventDefault();
+        if (lock) return;
+        lock = true;
+        ensureAudio();
+        handler();
+        setTimeout(() => { lock = false; }, 75);
+      };
+      el.addEventListener('touchstart', invoke, { passive: false });
+      el.addEventListener('click', invoke);
+    }
+
     document.getElementById('btnStart').addEventListener('click', startGame);
-    document.getElementById('btnLeft').addEventListener('click', () => move(-1));
-    document.getElementById('btnRight').addEventListener('click', () => move(1));
-    document.getElementById('btnDown').addEventListener('click', softDrop);
-    document.getElementById('btnRotate').addEventListener('click', doRotate);
-    document.getElementById('btnDrop').addEventListener('click', hardDrop);
-    document.getElementById('btnHold').addEventListener('click', holdPiece);
-    document.getElementById('btnPause').addEventListener('click', () => {
+    bindFastTap('btnLeft', () => move(-1));
+    bindFastTap('btnRight', () => move(1));
+    bindFastTap('btnDown', softDrop);
+    bindFastTap('btnRotate', doRotate);
+    bindFastTap('btnDrop', hardDrop);
+    bindFastTap('btnHold', holdPiece);
+    bindFastTap('holdWellBox', holdPiece);
+    bindFastTap('btnBrownLine', brownClearLine);
+    bindFastTap('btnBrownGift', brownGift);
+
+    bindFastTap('btnPause', () => {
       if (!started) return;
       paused = !paused;
+      sfxRotate();
       document.getElementById('btnPause').textContent = paused ? '▶' : '⏸';
     });
-    document.getElementById('btnBrownLine').addEventListener('click', brownClearLine);
-    document.getElementById('btnBrownGift').addEventListener('click', brownGift);
 
     document.getElementById('btnToggleBgm').addEventListener('click', function() {
+      ensureAudio();
       bgmOn = !bgmOn;
-      this.textContent = bgmOn ? '🎵 音樂: 開' : '🎵 音樂: 關';
+      this.textContent = bgmOn ? '🎵 輕快音樂: 開' : '🔇 輕快音樂: 關';
+      if (bgmOn) startBgmLoop();
+      else stopBgmLoop();
     });
+
+    document.getElementById('btnSwitchBgmStyle').addEventListener('click', function() {
+      ensureAudio();
+      bgmStyleIdx = (bgmStyleIdx + 1) % BGM_STYLES.length;
+      this.textContent = BGM_STYLES[bgmStyleIdx].label;
+      sfxRotate();
+      if (bgmOn && !bgmTimer) startBgmLoop();
+    });
+
     document.getElementById('btnToggleSfx').addEventListener('click', function() {
+      ensureAudio();
       sfxOn = !sfxOn;
-      this.textContent = sfxOn ? '🫧 音效: 開' : '🫧 音效: 關';
+      this.textContent = sfxOn ? '🫧 泡泡音: 開' : '🔕 泡泡音: 關';
+      if (sfxOn) sfxTestFive();
     });
+
     document.getElementById('btnTestBubble').addEventListener('click', () => {
       ensureAudio();
+      sfxOn = true;
+      document.getElementById('btnToggleSfx').textContent = '🫧 泡泡音: 開';
       sfxTestFive();
     });
+
     document.getElementById('btnHelp').addEventListener('click', () => {
+      sfxMove();
       document.getElementById('helpModal').classList.add('show');
     });
     document.getElementById('btnCloseHelp').addEventListener('click', () => {
+      sfxMove();
       document.getElementById('helpModal').classList.remove('show');
     });
 
     window.addEventListener('keydown', e => {
       if (!started || paused) {
         if (e.key === 'p' || e.key === 'P') {
-          if (started) { paused = !paused; document.getElementById('btnPause').textContent = paused ? '▶' : '⏸'; }
+          if (started) {
+            paused = !paused;
+            document.getElementById('btnPause').textContent = paused ? '▶' : '⏸';
+          }
         }
         return;
       }
       switch(e.key) {
-        case 'ArrowLeft': move(-1); break;
-        case 'ArrowRight': move(1); break;
-        case 'ArrowDown': softDrop(); break;
-        case 'ArrowUp': case 'z': case 'Z': doRotate(); break;
+        case 'ArrowLeft': move(-1); e.preventDefault(); break;
+        case 'ArrowRight': move(1); e.preventDefault(); break;
+        case 'ArrowDown': softDrop(); e.preventDefault(); break;
+        case 'ArrowUp': case 'z': case 'Z': doRotate(); e.preventDefault(); break;
         case ' ': hardDrop(); e.preventDefault(); break;
         case 'c': case 'C': holdPiece(); break;
         case 'b': case 'B': brownClearLine(); break;
         case 'g': case 'G': brownGift(); break;
-        case 'p': case 'P': paused = !paused; document.getElementById('btnPause').textContent = paused ? '▶' : '⏸'; break;
+        case 'p': case 'P':
+          paused = !paused;
+          document.getElementById('btnPause').textContent = paused ? '▶' : '⏸';
+          break;
       }
     });
 
     let touchStartX=0, touchStartY=0;
     canvas.addEventListener('touchstart', e => {
+      ensureAudio();
       const t = e.changedTouches[0];
       touchStartX = t.clientX; touchStartY = t.clientY;
     }, {passive:true});
+    canvas.addEventListener('touchmove', e => {
+      if (started && !paused) e.preventDefault();
+    }, {passive:false});
     canvas.addEventListener('touchend', e => {
+      if (!started || paused) return;
       const t = e.changedTouches[0];
       const dx = t.clientX - touchStartX;
       const dy = t.clientY - touchStartY;
-      if (Math.abs(dx) < 12 && Math.abs(dy) < 12) {
+      if (Math.abs(dx) < 14 && Math.abs(dy) < 14) {
         doRotate();
       } else if (Math.abs(dx) > Math.abs(dy)) {
         move(dx > 0 ? 1 : -1);
