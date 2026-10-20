@@ -137,32 +137,35 @@
       max-width: 100%;
       height: auto;
       display: block;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
     }
-    /* Mobile fixed bottom gamepad */
+    /* Mobile bottom gamepad — participates in flex layout on phones */
     .mobile-gamepad {
       display: none;
-      position: fixed;
+      position: relative;
       left: 0;
       right: 0;
       bottom: 0;
       z-index: 50;
       width: 100%;
-      padding: 10px 12px calc(12px + var(--safe-bottom));
+      padding: 8px 10px calc(10px + var(--safe-bottom));
       background: linear-gradient(180deg, rgba(30,86,54,0.97) 0%, #1E5636 50%);
       border-top: 3px solid #1C5232;
-      box-shadow: 0 -10px 28px rgba(0,0,0,0.35);
+      box-shadow: 0 -6px 20px rgba(0,0,0,0.28);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
+      flex-shrink: 0;
     }
     .mobile-gamepad .pad-btn {
-      min-height: 54px;
-      font-size: 1.25rem;
+      min-height: 48px;
+      font-size: 1.2rem;
       font-weight: 900;
-      border-radius: 14px;
+      border-radius: 12px;
     }
     .mobile-gamepad .pad-btn-lg {
-      min-height: 52px;
-      font-size: 0.95rem;
+      min-height: 46px;
+      font-size: 0.9rem;
     }
     @keyframes floatBob {
       0%, 100% { transform: translateY(0px); }
@@ -183,98 +186,236 @@
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-thumb { background: rgba(40,110,70,0.4); border-radius: 3px; }
 
-    /* ===== Mobile portrait: fit one screen, no scroll while playing ===== */
+    /* ===== Mobile portrait: true full-screen fit for every phone ===== */
     @media (max-width: 640px) {
+      html, body {
+        height: 100%;
+        height: 100dvh;
+        height: 100svh;
+        overflow: hidden;
+        overscroll-behavior: none;
+      }
       body {
         justify-content: flex-start;
-        padding: 2px 4px 0;
-        padding-bottom: 0;
-        height: 100dvh;
-        overflow: hidden;
+        padding: 0 !important;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
       }
       body.playing {
         overflow: hidden !important;
         position: fixed;
+        inset: 0;
         width: 100%;
         height: 100%;
+        height: 100dvh;
+        height: 100svh;
       }
       .desktop-only-controls {
         display: none !important;
       }
       .mobile-gamepad {
         display: block;
+        flex-shrink: 0;
       }
-      /* Leave space for fixed gamepad (~130px) */
+      /* Full-width shell, fill remaining viewport above gamepad */
       .calendar-shell {
-        border-radius: 12px;
-        padding: 6px !important;
-        margin-bottom: 130px;
-        max-height: calc(100dvh - 140px);
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        padding: 4px 4px 2px !important;
+        margin: 0;
+        margin-bottom: 0;
+        max-width: 100% !important;
+        width: 100%;
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: none;
       }
       /* Hide bulky bottom logo plate on phone */
       .mobile-hide-footer {
         display: none !important;
       }
-      /* Shrink decorative header */
+      /* Shrink decorative header aggressively */
       .mobile-compact-header {
-        margin-bottom: 4px !important;
+        margin-bottom: 2px !important;
+        flex-shrink: 0;
       }
       .mobile-compact-header .lego-stud-top {
-        height: 8px !important;
-        width: 22px !important;
+        height: 6px !important;
+        width: 18px !important;
       }
       .mobile-compact-header .min-h-\[82px\] {
-        min-height: 48px !important;
-        padding: 4px !important;
+        min-height: 40px !important;
+        padding: 2px !important;
       }
       .mobile-compact-header svg {
-        width: 28px !important;
-        height: 28px !important;
+        width: 24px !important;
+        height: 24px !important;
       }
       .mobile-compact-header .w-20,
       .mobile-compact-header .sm\:w-24 {
-        width: 56px !important;
-        height: 56px !important;
+        width: 48px !important;
+        height: 48px !important;
       }
       .mobile-compact-header .w-24,
       .mobile-compact-header .sm\:w-28 {
-        width: 56px !important;
-        height: 56px !important;
+        width: 48px !important;
+        height: 48px !important;
       }
       .mobile-hide-on-phone {
         display: none !important;
       }
-      /* Canvas: scale to fit available height */
-      #gameCanvas {
-        width: min(100%, 300px) !important;
-        max-height: min(48dvh, 420px) !important;
-        height: auto !important;
-        margin: 0 auto;
+      /* Weekday strip compact */
+      .calendar-shell > .grid.grid-cols-7 {
+        padding-top: 2px !important;
+        padding-bottom: 2px !important;
+        margin-bottom: 3px !important;
+        flex-shrink: 0;
+      }
+      .calendar-shell > .grid.grid-cols-7 span {
+        font-size: 0.65rem !important;
+      }
+      /* Main play + side grid becomes flexible column */
+      .calendar-shell > .grid.grid-cols-12 {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px !important;
+        overflow: hidden;
+      }
+      /* Playfield takes all remaining vertical space */
+      .calendar-shell > .grid.grid-cols-12 > .col-span-12.sm\:col-span-8 {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
       }
       .recessed-well {
         border-radius: 8px;
-        padding: 3px !important;
+        padding: 2px !important;
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
       }
-      /* Side panel tighter */
-      .col-span-12.sm\:col-span-4 > div {
-        padding: 6px !important;
+      /* Canvas fills available area, aspect maintained by JS */
+      #gameCanvas {
+        width: auto !important;
+        height: auto !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        margin: 0 auto;
+        object-fit: contain;
+      }
+      /* Side panel becomes a compact horizontal strip under canvas */
+      .calendar-shell > .grid.grid-cols-12 > .col-span-12.sm\:col-span-4 {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px !important;
+        max-height: none;
+        overflow: visible;
+      }
+      .calendar-shell > .grid.grid-cols-12 > .col-span-12.sm\:col-span-4 > div {
+        padding: 4px !important;
+      }
+      /* NEXT + HOLD side by side, smaller */
+      .calendar-shell .grid.grid-cols-2 {
+        flex: 0 0 auto;
+        width: auto;
+        min-width: 0;
+      }
+      .calendar-shell .grid.grid-cols-2 .recessed-well {
+        width: 56px !important;
+        height: 56px !important;
+        min-height: 56px !important;
+        flex: none;
+      }
+      .calendar-shell .grid.grid-cols-2 canvas {
+        width: 52px !important;
+        height: 52px !important;
+      }
+      /* Score card more compact */
+      .calendar-shell .bg-\[\#1F5837\] {
+        flex: 1 1 120px;
+        min-width: 0;
+      }
+      /* Brown skill more compact */
+      .calendar-shell .bg-\[\#3A241B\] {
+        flex: 1 1 140px;
+        min-width: 0;
+      }
+      /* Hide audio mixer on phone to free vertical space for the board */
+      .mobile-hide-audio {
+        display: none !important;
       }
       .top-utility {
-        gap: 4px;
-        margin-bottom: 4px !important;
-        padding-left: 2px !important;
-        padding-right: 2px !important;
+        gap: 3px;
+        margin-bottom: 2px !important;
+        padding: 2px 4px !important;
+        flex-shrink: 0;
+        max-width: 100% !important;
       }
       .top-utility button {
-        padding: 5px 7px !important;
-        font-size: 0.65rem !important;
-        min-height: 32px;
+        padding: 4px 6px !important;
+        font-size: 0.6rem !important;
+        min-height: 28px;
       }
       .top-utility .text-xs,
       .top-utility .sm\:text-sm {
-        font-size: 0.7rem !important;
+        font-size: 0.65rem !important;
+      }
+      /* Brown speech bubble smaller */
+      #brownSpeech {
+        font-size: 9px !important;
+        padding: 2px 6px !important;
+        top: -18px !important;
+      }
+    }
+    /* Extra-small phones (iPhone SE / narrow) */
+    @media (max-width: 380px) {
+      .mobile-gamepad .pad-btn {
+        min-height: 42px;
+        font-size: 1.05rem;
+      }
+      .mobile-gamepad .pad-btn-lg {
+        min-height: 40px;
+        font-size: 0.8rem;
+      }
+      .calendar-shell .grid.grid-cols-2 .recessed-well {
+        width: 48px !important;
+        height: 48px !important;
+        min-height: 48px !important;
+      }
+    }
+    /* Landscape phones: keep usable */
+    @media (max-width: 900px) and (orientation: landscape) {
+      .mobile-gamepad {
+        display: block;
+        padding: 4px 8px calc(6px + var(--safe-bottom));
+      }
+      .mobile-gamepad .pad-btn {
+        min-height: 36px;
+        font-size: 1rem;
+      }
+      .mobile-gamepad .pad-btn-lg {
+        min-height: 34px;
+      }
+      .mobile-gamepad p {
+        display: none;
+      }
+      .calendar-shell {
+        margin-bottom: 0;
       }
     }
     @media (min-width: 641px) {
@@ -558,7 +699,7 @@
         </div>
 
         <!-- Audio Style & Volume Mini Mixer -->
-        <div class="bg-[#1F5837] border-2 border-[#153E26] rounded-xl p-2.5 space-y-1.5 shadow-inner">
+        <div class="mobile-hide-audio bg-[#1F5837] border-2 border-[#153E26] rounded-xl p-2.5 space-y-1.5 shadow-inner">
           <div class="flex items-center justify-between">
             <span class="text-[11px] font-bold text-emerald-100">🎶 俏皮曲風</span>
             <select id="bgmStyleSelect" class="bg-[#143B24] text-amber-200 text-xs font-bold px-2 py-0.5 rounded border border-emerald-700 focus:outline-none">
@@ -954,7 +1095,7 @@
      ********************************************************************/
     const COLS = 10;
     const ROWS = 18;
-    const CELL = 32; // 320x576 canvas
+    let CELL = 32; // Dynamic cell size (px) — resized to fit phone screen
 
     // Palette matching the user's LINE FRIENDS LEGO Calendar photo
     const PALETTE = {
@@ -1630,6 +1771,50 @@
     /********************************************************************
      * 5. RENDERING PLAYFIELD, GHOST PIECE, BUBBLES & PREVIEWS
      ********************************************************************/
+
+    /**
+     * Dynamically size the main canvas so the 10×18 board fills
+     * the largest possible area on any phone without scrolling.
+     */
+    function resizeGameCanvas() {
+      const well = canvas.parentElement; // .recessed-well
+      if (!well) return;
+
+      const availW = Math.max(120, well.clientWidth - 4);
+      const availH = Math.max(160, well.clientHeight - 4);
+
+      const cellByW = Math.floor(availW / COLS);
+      const cellByH = Math.floor(availH / ROWS);
+      let newCell = Math.min(cellByW, cellByH);
+      newCell = Math.max(14, Math.min(36, newCell));
+
+      if (newCell === CELL && canvas.width === COLS * CELL && canvas.height === ROWS * CELL) {
+        return;
+      }
+
+      CELL = newCell;
+      canvas.width = COLS * CELL;
+      canvas.height = ROWS * CELL;
+      canvas.style.width = canvas.width + 'px';
+      canvas.style.height = canvas.height + 'px';
+
+      renderSidePreviews();
+      renderAll();
+    }
+
+    let resizeTimer = null;
+    function scheduleResize() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => { resizeGameCanvas(); }, 80);
+    }
+    window.addEventListener('resize', scheduleResize);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(scheduleResize, 150);
+    });
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', scheduleResize);
+    }
+
     function getGhostY() {
       if (!currentPiece) return 0;
       let gy = currentPiece.y;
@@ -1644,6 +1829,7 @@
       ctx.fillStyle = '#153B25';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+      const socketR = Math.max(2.5, CELL * 0.17);
       for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
           const x = c * CELL;
@@ -1655,7 +1841,7 @@
           // Subtle recessed LEGO socket circle in empty cells
           if (!board[r][c]) {
             ctx.beginPath();
-            ctx.arc(x + CELL / 2, y + CELL / 2 + 1, 5.5, 0, Math.PI * 2);
+            ctx.arc(x + CELL / 2, y + CELL / 2 + 1, socketR, 0, Math.PI * 2);
             ctx.fillStyle = 'rgba(0,0,0,0.18)';
             ctx.fill();
           }
@@ -1824,8 +2010,12 @@
 
       updateHud();
       renderSidePreviews();
-      lastDropTime = performance.now();
-      animFrameId = requestAnimationFrame(gameLoop);
+      // Re-measure after overlay is removed so canvas fills the free space
+      requestAnimationFrame(() => {
+        resizeGameCanvas();
+        lastDropTime = performance.now();
+        animFrameId = requestAnimationFrame(gameLoop);
+      });
     }
 
     function togglePause() {
@@ -2118,6 +2308,13 @@
       nextPiece = createRandomPiece();
       renderSidePreviews();
       renderAll();
+      // Double rAF + short delay so CSS flex has finished measuring on all phones
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          resizeGameCanvas();
+          setTimeout(resizeGameCanvas, 120);
+        });
+      });
     };
   </script>
 </body>
