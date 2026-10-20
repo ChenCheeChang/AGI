@@ -5,23 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="theme-color" content="#286E46" />
-  <title>LINE FRIENDS 積木日曆俄羅斯方塊 - 手機版</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#153B25" />
+  <title>LINE FRIENDS 積木日曆方塊</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --frame-green: #286E46;
-      --frame-green-dark: #1B5032;
-      --frame-green-light: #398A5B;
-      --stud-green: #2E7D52;
-      --board-bg: #153B25;
-      --block-white: #F7F6F0;
-      --block-brown: #3A241B;
-      --block-orange: #D9822B;
-      --block-blue: #7393B3;
-      --block-green: #2F7D53;
       --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-top: env(safe-area-inset-top, 0px);
     }
     * {
       box-sizing: border-box;
@@ -29,1075 +19,314 @@
       -webkit-user-select: none;
       -webkit-touch-callout: none;
       -webkit-tap-highlight-color: transparent;
-    }
-    html, body {
       margin: 0;
       padding: 0;
+    }
+    html, body {
+      width: 100%;
       height: 100%;
+      height: 100dvh;
+      height: 100svh;
+      overflow: hidden;
       overscroll-behavior: none;
+      background: #0F2A1A;
+      font-family: 'Fredoka', 'Noto Sans TC', sans-serif;
+      color: #F7F6F0;
     }
     body {
-      font-family: 'Fredoka', 'Noto Sans TC', sans-serif;
-      background: radial-gradient(circle at 50% 20%, #FFF8EB 0%, #F3E3C9 55%, #E5CEAA 100%);
-      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      inset: 0;
+    }
+    .hud {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding: calc(6px + var(--safe-top)) 8px 6px;
+      background: linear-gradient(180deg, #1B4E30 0%, #153B25 100%);
+      border-bottom: 2px solid #0F2A1A;
+      z-index: 10;
+    }
+    .hud-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .hud-stat {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      overflow-x: hidden;
-      overflow-y: auto;
-      color: #2C1D14;
-      padding-bottom: calc(12px + var(--safe-bottom));
+      line-height: 1.15;
     }
-    body.playing {
-      overflow: hidden;
-      touch-action: none;
+    .hud-stat span:first-child {
+      font-size: 0.55rem;
+      opacity: 0.75;
     }
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(160, 115, 70, 0.03) 0px,
-        rgba(160, 115, 70, 0.03) 2px,
-        transparent 2px,
-        transparent 14px
-      );
-      pointer-events: none;
-      z-index: 0;
+    .hud-stat span:last-child {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: #FFE07D;
     }
-    .calendar-shell {
-      position: relative;
-      z-index: 1;
-      background: linear-gradient(145deg, #318254 0%, #266A43 60%, #1E5636 100%);
-      border-radius: 16px;
-      box-shadow:
-        0 14px 32px rgba(25, 45, 30, 0.38),
-        0 4px 10px rgba(0, 0, 0, 0.22),
-        inset 0 2px 3px rgba(255, 255, 255, 0.28),
-        inset 0 -4px 8px rgba(0, 0, 0, 0.32);
-      border: 3px solid #1C5232;
-      width: 100%;
-      max-width: 660px;
-    }
-    .lego-stud-top {
-      background: linear-gradient(90deg, #23643E 0%, #3E9964 42%, #297047 80%, #1B4E30 100%);
-      border-radius: 7px 7px 0 0;
-      box-shadow:
-        inset 0 2px 2px rgba(255,255,255,0.35),
-        0 -2px 4px rgba(0,0,0,0.15);
-      border: 2px solid #1B4E30;
-      border-bottom: none;
-    }
-    .flip-card {
-      background: linear-gradient(180deg, #FFFFFF 0%, #F5F2EA 100%);
+    .hud-btn {
+      min-width: 40px;
+      min-height: 36px;
+      padding: 4px 8px;
+      border: none;
       border-radius: 10px;
-      box-shadow:
-        0 6px 0 #D5CFC2,
-        0 10px 16px rgba(0,0,0,0.28),
-        inset 0 1px 2px #FFFFFF;
-      transform: rotate(-4deg);
-      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-      cursor: pointer;
+      font-weight: 900;
+      font-size: 0.8rem;
+      background: #286E46;
+      color: #fff;
+      box-shadow: 0 3px 0 #0F2A1A;
     }
-    .flip-card:active {
-      transform: rotate(3deg) scale(0.96);
+    .hud-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #0F2A1A;
     }
-    .binder-ring {
-      position: absolute;
-      width: 12px;
-      height: 24px;
-      border: 4px solid #E8ECEF;
-      border-radius: 999px;
-      top: -13px;
-      box-shadow: 0 2px 3px rgba(0,0,0,0.3), inset 0 1px 1px #FFF;
-      background: transparent;
+    .hud-btn.accent {
+      background: #D9822B;
+      color: #3A241B;
     }
-    .recessed-well {
+    .stage {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      position: relative;
+      background: radial-gradient(ellipse at center, #1A4A2E 0%, #0F2A1A 70%);
+    }
+    .board-frame {
+      position: relative;
+      border-radius: 10px;
+      padding: 3px;
       background: #133622;
-      border-radius: 12px;
-      box-shadow:
-        inset 0 5px 12px rgba(0,0,0,0.65),
-        inset 0 0 0 3px #1B4A2E,
-        0 2px 1px rgba(255,255,255,0.18);
-    }
-    .tactile-btn {
-      transition: all 0.1s ease;
-      box-shadow: 0 4px 0 rgba(0,0,0,0.32), inset 0 2px 1px rgba(255,255,255,0.35);
-      touch-action: manipulation;
-      min-height: 44px;
-    }
-    .tactile-btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 rgba(0,0,0,0.32), inset 0 1px 1px rgba(255,255,255,0.2);
+      box-shadow: inset 0 3px 10px rgba(0,0,0,0.55), 0 2px 0 rgba(255,255,255,0.08);
+      max-width: 100%;
+      max-height: 100%;
     }
     #gameCanvas {
+      display: block;
+      border-radius: 8px;
       touch-action: none;
       max-width: 100%;
-      height: auto;
-      display: block;
+      max-height: 100%;
       image-rendering: -webkit-optimize-contrast;
       image-rendering: crisp-edges;
     }
-    /* Mobile bottom gamepad — participates in flex layout on phones */
-    .mobile-gamepad {
-      display: none;
-      position: relative;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 50;
-      width: 100%;
-      padding: 8px 10px calc(10px + var(--safe-bottom));
-      background: linear-gradient(180deg, rgba(30,86,54,0.97) 0%, #1E5636 50%);
-      border-top: 3px solid #1C5232;
-      box-shadow: 0 -6px 20px rgba(0,0,0,0.28);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      flex-shrink: 0;
+    .overlay {
+      position: absolute;
+      inset: 0;
+      border-radius: 8px;
+      background: rgba(15, 42, 26, 0.92);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px;
+      text-align: center;
+      z-index: 20;
     }
-    .mobile-gamepad .pad-btn {
-      min-height: 48px;
-      font-size: 1.2rem;
+    .overlay.hidden { display: none; }
+    .overlay h2 {
+      font-size: 1.15rem;
       font-weight: 900;
-      border-radius: 12px;
+      color: #FFE07D;
     }
-    .mobile-gamepad .pad-btn-lg {
-      min-height: 46px;
+    .overlay p {
+      font-size: 0.75rem;
+      opacity: 0.9;
+      max-width: 240px;
+      line-height: 1.4;
+    }
+    .overlay .start-btn {
+      margin-top: 6px;
+      min-height: 48px;
+      padding: 10px 28px;
+      border: none;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 900;
+      background: #D9822B;
+      color: #3A241B;
+      box-shadow: 0 4px 0 #9C5714;
+    }
+    .overlay .start-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #9C5714;
+    }
+    .toast {
+      position: absolute;
+      top: 18%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 14px;
+      border-radius: 14px;
+      background: rgba(255, 224, 125, 0.95);
+      color: #3A241B;
+      font-weight: 900;
+      font-size: 0.95rem;
+      border: 3px solid #fff;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+      z-index: 25;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; }
+    .controls {
+      flex: 0 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 8px;
+      padding: 8px 10px 0;
+      background: linear-gradient(180deg, #1E5636 0%, #153B25 100%);
+      border-top: 2px solid #0F2A1A;
+    }
+    .ctrl-btn {
+      min-height: 52px;
+      border: none;
+      border-radius: 14px;
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #3A241B;
+      background: #F7F6F0;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ctrl-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.35);
+    }
+    .ctrl-btn.rotate {
+      background: #D9822B;
+      color: #fff;
+    }
+    .controls-extra {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 8px;
+      padding: 8px 10px calc(10px + var(--safe-bottom));
+      background: #153B25;
+    }
+    .controls-extra .ctrl-btn {
+      min-height: 44px;
       font-size: 0.9rem;
     }
-    @keyframes floatBob {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-4px); }
+    .ctrl-btn.drop {
+      background: #7393B3;
+      color: #fff;
     }
-    @keyframes celebrateJump {
-      0%, 100% { transform: translateY(0) scale(1); }
-      25% { transform: translateY(-14px) scale(1.08, 0.95) rotate(-5deg); }
-      50% { transform: translateY(-4px) scale(0.96, 1.04) rotate(5deg); }
-      75% { transform: translateY(-12px) scale(1.06, 0.96) rotate(-3deg); }
+    .ctrl-btn.hold {
+      background: #E8B84A;
+      color: #3A241B;
     }
-    .brown-bob {
-      animation: floatBob 2.6s ease-in-out infinite;
+    @media (max-height: 620px) {
+      .hud { padding-top: calc(4px + var(--safe-top)); padding-bottom: 4px; }
+      .hud-stat span:last-child { font-size: 0.85rem; }
+      .ctrl-btn { min-height: 44px; font-size: 1.15rem; }
+      .controls-extra .ctrl-btn { min-height: 38px; }
     }
-    .brown-celebrate {
-      animation: celebrateJump 0.65s ease-in-out infinite;
-    }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-thumb { background: rgba(40,110,70,0.4); border-radius: 3px; }
-
-    /* ===== Mobile portrait: true full-screen fit for every phone ===== */
-    @media (max-width: 640px) {
-      html, body {
-        height: 100%;
-        height: 100dvh;
-        height: 100svh;
-        overflow: hidden;
-        overscroll-behavior: none;
-      }
-      body {
-        justify-content: flex-start;
-        padding: 0 !important;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-      }
-      body.playing {
-        overflow: hidden !important;
-        position: fixed;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        height: 100dvh;
-        height: 100svh;
-      }
-      .desktop-only-controls {
-        display: none !important;
-      }
-      .mobile-gamepad {
-        display: block;
-        flex-shrink: 0;
-      }
-      /* Full-width shell, fill remaining viewport above gamepad */
-      .calendar-shell {
-        border-radius: 0;
-        border-left: none;
-        border-right: none;
-        border-top: none;
-        padding: 4px 4px 2px !important;
-        margin: 0;
-        margin-bottom: 0;
-        max-width: 100% !important;
-        width: 100%;
-        flex: 1 1 auto;
-        min-height: 0;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        box-shadow: none;
-      }
-      /* Hide bulky bottom logo plate on phone */
-      .mobile-hide-footer {
-        display: none !important;
-      }
-      /* Shrink decorative header aggressively */
-      .mobile-compact-header {
-        margin-bottom: 2px !important;
-        flex-shrink: 0;
-      }
-      .mobile-compact-header .lego-stud-top {
-        height: 6px !important;
-        width: 18px !important;
-      }
-      .mobile-compact-header .min-h-\[82px\] {
-        min-height: 40px !important;
-        padding: 2px !important;
-      }
-      .mobile-compact-header svg {
-        width: 24px !important;
-        height: 24px !important;
-      }
-      .mobile-compact-header .w-20,
-      .mobile-compact-header .sm\:w-24 {
-        width: 48px !important;
-        height: 48px !important;
-      }
-      .mobile-compact-header .w-24,
-      .mobile-compact-header .sm\:w-28 {
-        width: 48px !important;
-        height: 48px !important;
-      }
-      .mobile-hide-on-phone {
-        display: none !important;
-      }
-      /* Weekday strip compact */
-      .calendar-shell > .grid.grid-cols-7 {
-        padding-top: 2px !important;
-        padding-bottom: 2px !important;
-        margin-bottom: 3px !important;
-        flex-shrink: 0;
-      }
-      .calendar-shell > .grid.grid-cols-7 span {
-        font-size: 0.65rem !important;
-      }
-      /* Main play + side grid becomes flexible column */
-      .calendar-shell > .grid.grid-cols-12 {
-        flex: 1 1 auto;
-        min-height: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 4px !important;
-        overflow: hidden;
-      }
-      /* Playfield takes all remaining vertical space */
-      .calendar-shell > .grid.grid-cols-12 > .col-span-12.sm\:col-span-8 {
-        flex: 1 1 auto;
-        min-height: 0;
-        display: flex;
-        flex-direction: column;
-      }
-      .recessed-well {
-        border-radius: 8px;
-        padding: 2px !important;
-        flex: 1 1 auto;
-        min-height: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-      }
-      /* Canvas fills available area, aspect maintained by JS */
-      #gameCanvas {
-        width: auto !important;
-        height: auto !important;
-        max-width: 100% !important;
-        max-height: 100% !important;
-        margin: 0 auto;
-        object-fit: contain;
-      }
-      /* Side panel becomes a compact horizontal strip under canvas */
-      .calendar-shell > .grid.grid-cols-12 > .col-span-12.sm\:col-span-4 {
-        flex: 0 0 auto;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 4px !important;
-        max-height: none;
-        overflow: visible;
-      }
-      .calendar-shell > .grid.grid-cols-12 > .col-span-12.sm\:col-span-4 > div {
-        padding: 4px !important;
-      }
-      /* NEXT + HOLD side by side, smaller */
-      .calendar-shell .grid.grid-cols-2 {
-        flex: 0 0 auto;
-        width: auto;
-        min-width: 0;
-      }
-      .calendar-shell .grid.grid-cols-2 .recessed-well {
-        width: 56px !important;
-        height: 56px !important;
-        min-height: 56px !important;
-        flex: none;
-      }
-      .calendar-shell .grid.grid-cols-2 canvas {
-        width: 52px !important;
-        height: 52px !important;
-      }
-      /* Score card more compact */
-      .calendar-shell .bg-\[\#1F5837\] {
-        flex: 1 1 120px;
-        min-width: 0;
-      }
-      /* Brown skill more compact */
-      .calendar-shell .bg-\[\#3A241B\] {
-        flex: 1 1 140px;
-        min-width: 0;
-      }
-      /* Hide audio mixer on phone to free vertical space for the board */
-      .mobile-hide-audio {
-        display: none !important;
-      }
-      .top-utility {
-        gap: 3px;
-        margin-bottom: 2px !important;
-        padding: 2px 4px !important;
-        flex-shrink: 0;
-        max-width: 100% !important;
-      }
-      .top-utility button {
-        padding: 4px 6px !important;
-        font-size: 0.6rem !important;
-        min-height: 28px;
-      }
-      .top-utility .text-xs,
-      .top-utility .sm\:text-sm {
-        font-size: 0.65rem !important;
-      }
-      /* Brown speech bubble smaller */
-      #brownSpeech {
-        font-size: 9px !important;
-        padding: 2px 6px !important;
-        top: -18px !important;
-      }
-    }
-    /* Extra-small phones (iPhone SE / narrow) */
-    @media (max-width: 380px) {
-      .mobile-gamepad .pad-btn {
-        min-height: 42px;
-        font-size: 1.05rem;
-      }
-      .mobile-gamepad .pad-btn-lg {
-        min-height: 40px;
-        font-size: 0.8rem;
-      }
-      .calendar-shell .grid.grid-cols-2 .recessed-well {
-        width: 48px !important;
-        height: 48px !important;
-        min-height: 48px !important;
-      }
-    }
-    /* Landscape phones: keep usable */
-    @media (max-width: 900px) and (orientation: landscape) {
-      .mobile-gamepad {
-        display: block;
-        padding: 4px 8px calc(6px + var(--safe-bottom));
-      }
-      .mobile-gamepad .pad-btn {
-        min-height: 36px;
-        font-size: 1rem;
-      }
-      .mobile-gamepad .pad-btn-lg {
-        min-height: 34px;
-      }
-      .mobile-gamepad p {
-        display: none;
-      }
-      .calendar-shell {
-        margin-bottom: 0;
-      }
-    }
-    @media (min-width: 641px) {
-      .mobile-gamepad {
-        display: none !important;
-      }
+    @media (max-width: 360px) {
+      .hud-stat span:last-child { font-size: 0.8rem; }
+      .ctrl-btn { min-height: 46px; }
     }
   </style>
 </head>
-<body class="p-1 sm:p-4">
-
-  <!-- Top Sound & App Utility Bar -->
-  <div class="top-utility w-full max-w-[660px] flex flex-wrap items-center justify-between gap-2 mb-2 px-1 sm:px-2 z-10">
-    <div class="flex items-center gap-1.5 bg-white/85 backdrop-blur px-3 py-1.5 rounded-full shadow-sm border border-amber-900/10">
-      <span class="text-base">🧸</span>
-      <span class="text-xs sm:text-sm font-bold text-emerald-900 tracking-tight">LINE FRIENDS 積木日曆方塊</span>
-      <span id="holidayBadge" class="ml-1 px-2 py-0.5 text-[11px] font-bold bg-amber-100 text-amber-900 rounded-full border border-amber-300">
-        🏖️ 累積休假 0 天
-      </span>
+<body>
+  <div class="hud">
+    <div class="hud-group">
+      <div class="hud-stat"><span>分數</span><span id="scoreVal">0</span></div>
+      <div class="hud-stat"><span>休假</span><span id="linesVal">0</span></div>
+      <div class="hud-stat"><span>等級</span><span id="levelVal">1</span></div>
     </div>
-
-    <div class="flex items-center gap-1.5">
-      <button id="btnToggleBgm" type="button" class="tactile-btn flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-700 text-white hover:bg-emerald-600">
-        <span id="bgmIcon">🎵</span>
-        <span id="bgmLabel">俏皮音樂: 開</span>
-      </button>
-      <button id="btnToggleSfx" type="button" class="tactile-btn flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-sky-600 text-white hover:bg-sky-500">
-        <span id="sfxIcon">🫧</span>
-        <span id="sfxLabel">泡泡音效: 開</span>
-      </button>
-      <button id="btnTestBubble" type="button" class="tactile-btn px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500 text-amber-950 hover:bg-amber-400" title="點我試聽Q彈泡泡聲">
-        🫧 啵啵試聽
-      </button>
-      <button id="btnHelpModal" type="button" class="tactile-btn w-7 h-7 rounded-full text-xs font-bold bg-white text-emerald-900 hover:bg-emerald-50 flex items-center justify-center">
-        ?
-      </button>
+    <div class="hud-group">
+      <button type="button" class="hud-btn" id="btnMute">🫧</button>
+      <button type="button" class="hud-btn accent" id="btnPause">⏸</button>
     </div>
   </div>
 
-  <!-- Main Physical LEGO Calendar Frame -->
-  <div class="calendar-shell w-full max-w-[660px] p-3 sm:p-4 select-none">
-
-    <!-- Top Sculpted Header: Left LEGO Block + Center Flip Calendar + Right 3D Brown & Sally -->
-    <div class="mobile-compact-header grid grid-cols-12 gap-2 items-end mb-2 relative">
-
-      <!-- Left Green LEGO Block with 4 Studs & White Line-Art Characters -->
-      <div class="col-span-6 sm:col-span-6 relative pt-3">
-        <!-- 4 LEGO Studs on Top -->
-        <div class="flex justify-around px-3 -mb-[2px]">
-          <div class="lego-stud-top w-8 sm:w-10 h-3.5"></div>
-          <div class="lego-stud-top w-8 sm:w-10 h-3.5"></div>
-          <div class="lego-stud-top w-8 sm:w-10 h-3.5"></div>
-          <div class="lego-stud-top w-8 sm:w-10 h-3.5"></div>
-        </div>
-        <!-- Green Header Block Body -->
-        <div class="bg-[#2D7A4E] border-2 border-[#1B4E30] rounded-xl p-2 shadow-inner flex flex-col justify-between min-h-[82px]">
-          <!-- White Line Art of Cony, Brown, and Moon (matching photo) -->
-          <div class="flex items-center justify-around px-1">
-            <!-- Cony Line Art SVG -->
-            <svg class="w-10 h-10 sm:w-11 sm:h-11 text-white/95 drop-shadow-sm" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M23 26 C20 10, 26 6, 29 24" />
-              <path d="M35 24 C38 6, 44 10, 41 26" />
-              <path d="M26 22 C29 19, 35 19, 38 22" />
-              <ellipse cx="32" cy="40" rx="18" ry="15" />
-              <circle cx="26" cy="38" r="1.6" fill="currentColor" />
-              <circle cx="38" cy="38" r="1.6" fill="currentColor" />
-              <ellipse cx="32" cy="42" rx="2.5" ry="1.8" />
-              <path d="M30 45 C32 47, 34 47, 34 45" />
-            </svg>
-            <!-- Brown Line Art SVG -->
-            <svg class="w-10 h-10 sm:w-11 sm:h-11 text-white/95 drop-shadow-sm" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="17" cy="24" r="6" />
-              <circle cx="47" cy="24" r="6" />
-              <ellipse cx="32" cy="37" rx="19" ry="16" fill="#2D7A4E" />
-              <circle cx="28" cy="34" r="1.7" fill="currentColor" />
-              <circle cx="36" cy="34" r="1.7" fill="currentColor" />
-              <ellipse cx="32" cy="41" rx="5.5" ry="6.5" />
-              <path d="M32 38 L32 43 M29.5 45 L32 43 L34.5 45" />
-            </svg>
-            <!-- Moon / Little Character Line Art SVG -->
-            <svg class="w-8 h-8 sm:w-9 sm:h-9 text-white/95 drop-shadow-sm" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M16 28 C20 18, 44 18, 48 28" />
-              <circle cx="32" cy="38" r="14" />
-              <circle cx="27" cy="36" r="1.5" fill="currentColor" />
-              <circle cx="37" cy="36" r="1.5" fill="currentColor" />
-              <circle cx="32" cy="42" r="2.5" />
-            </svg>
-          </div>
-          <div class="text-center text-[11px] sm:text-xs font-bold text-emerald-100 tracking-widest mt-0.5">
-            DAILY BLOCK PUZZLE
-          </div>
-        </div>
-      </div>
-
-      <!-- Center White Flip Calendar Card ("10 Oct") -->
-      <div class="col-span-3 sm:col-span-3 flex flex-col items-center justify-end pb-1">
-        <div id="flipCardBtn" class="flip-card relative w-20 sm:w-24 h-20 sm:h-24 flex flex-col items-center justify-center border-2 border-stone-300" title="點我翻頁切換月份主題！">
-          <div class="binder-ring left-3"></div>
-          <div class="binder-ring right-3"></div>
-          <div id="calendarMonthNum" class="text-2xl sm:text-3xl font-black text-[#3A241B] leading-none mt-2">10</div>
-          <div id="calendarMonthTxt" class="text-xs sm:text-sm font-extrabold text-[#3A241B] tracking-wider">Oct</div>
-          <div class="text-[9px] font-bold text-amber-700 mt-0.5">點我翻頁 🫧</div>
-        </div>
-      </div>
-
-      <!-- Right 3D Brown & Sally Companion Figurine -->
-      <div class="col-span-3 sm:col-span-3 flex flex-col items-center justify-end relative">
-        <!-- Speech Bubble for Brown -->
-        <div id="brownSpeech" class="absolute -top-7 right-0 sm:-right-2 bg-white text-[#3A241B] text-[11px] font-extrabold px-2.5 py-1 rounded-2xl shadow-md border-2 border-amber-400 whitespace-nowrap transition-all duration-300 z-20">
-          一起消方塊放假吧！🫧
-        </div>
-
-        <!-- 3D-Styled Brown & Sally Figurine SVG -->
-        <div id="brownFigure" class="brown-bob cursor-pointer relative pt-2" title="點熊大互動或發動『熊大幫放假』技能！">
-          <svg class="w-24 h-24 sm:w-28 sm:h-28 drop-shadow-lg" viewBox="0 0 120 125">
-            <defs>
-              <radialGradient id="brownHeadGrad" cx="38%" cy="30%" r="65%">
-                <stop offset="0%" stop-color="#7B523B" />
-                <stop offset="55%" stop-color="#543423" />
-                <stop offset="100%" stop-color="#361E12" />
-              </radialGradient>
-              <radialGradient id="sallyGrad" cx="35%" cy="30%" r="65%">
-                <stop offset="0%" stop-color="#FFF066" />
-                <stop offset="60%" stop-color="#FFD000" />
-                <stop offset="100%" stop-color="#E09F00" />
-              </radialGradient>
-            </defs>
-            <!-- Sally Chick Sitting on Top of Brown's Head -->
-            <g id="sallyGroup">
-              <ellipse cx="60" cy="19" rx="14" ry="13" fill="url(#sallyGrad)" stroke="#4A2E1B" stroke-width="1.5" />
-              <!-- Sally Eyes -->
-              <circle cx="55.5" cy="17" r="1.8" fill="#231815" />
-              <circle cx="64.5" cy="17" r="1.8" fill="#231815" />
-              <!-- Sally Orange Beak -->
-              <ellipse cx="60" cy="21" rx="4.2" ry="2.6" fill="#FF6B2B" stroke="#B83B0B" stroke-width="1" />
-              <line x1="56.5" y1="21" x2="63.5" y2="21" stroke="#8F2A05" stroke-width="1" />
-            </g>
-
-            <!-- Brown's Ears -->
-            <circle cx="31" cy="38" r="11" fill="url(#brownHeadGrad)" stroke="#2B170E" stroke-width="1.5" />
-            <circle cx="31" cy="38" r="5.5" fill="#3B2216" />
-            <circle cx="89" cy="38" r="11" fill="url(#brownHeadGrad)" stroke="#2B170E" stroke-width="1.5" />
-            <circle cx="89" cy="38" r="5.5" fill="#3B2216" />
-
-            <!-- Brown's Body Sitting -->
-            <rect x="37" y="82" width="46" height="34" rx="18" fill="url(#brownHeadGrad)" stroke="#2B170E" stroke-width="1.5" />
-            <!-- Arms & Paws -->
-            <ellipse cx="43" cy="98" rx="7" ry="13" fill="#4B2E1E" stroke="#2B170E" stroke-width="1.5" />
-            <ellipse cx="77" cy="98" rx="7" ry="13" fill="#4B2E1E" stroke="#2B170E" stroke-width="1.5" />
-            <!-- Feet -->
-            <ellipse cx="49" cy="113" rx="9" ry="6.5" fill="#462A1B" stroke="#2B170E" stroke-width="1.5" />
-            <ellipse cx="71" cy="113" rx="9" ry="6.5" fill="#462A1B" stroke="#2B170E" stroke-width="1.5" />
-
-            <!-- Brown's Big Round 3D Head -->
-            <ellipse cx="60" cy="60" rx="35" ry="30" fill="url(#brownHeadGrad)" stroke="#2B170E" stroke-width="1.5" />
-
-            <!-- Rosy Blush Cheeks (visible especially when celebrating) -->
-            <ellipse id="brownBlushL" cx="38" cy="65" rx="5.5" ry="3.2" fill="#FF7B7B" opacity="0.35" />
-            <ellipse id="brownBlushR" cx="82" cy="65" rx="5.5" ry="3.2" fill="#FF7B7B" opacity="0.35" />
-
-            <!-- Brown's Small Close-Set Eyes -->
-            <circle cx="55" cy="54" r="2.7" fill="#1A0F0A" />
-            <circle cx="65" cy="54" r="2.7" fill="#1A0F0A" />
-
-            <!-- Cream Muzzle Oval -->
-            <ellipse cx="60" cy="66" rx="9.5" ry="11.5" fill="#F5EFE6" stroke="#D5C8B8" stroke-width="1" />
-            <!-- Nose & Inverted-Y Mouth -->
-            <polygon points="60,61 56.5,57.5 63.5,57.5" fill="#1F120B" />
-            <line x1="60" y1="60.5" x2="60" y2="67.5" stroke="#1F120B" stroke-width="2.5" stroke-linecap="round" />
-            <line x1="60" y1="67" x2="56" y2="71.5" stroke="#1F120B" stroke-width="2.5" stroke-linecap="round" />
-            <line x1="60" y1="67" x2="64" y2="71.5" stroke="#1F120B" stroke-width="2.5" stroke-linecap="round" />
-          </svg>
-        </div>
+  <div class="stage" id="stage">
+    <div class="board-frame" id="boardFrame">
+      <canvas id="gameCanvas" width="300" height="540"></canvas>
+      <div class="toast" id="toast">🏖️ 休假囉！</div>
+      <div class="overlay" id="overlay">
+        <div style="font-size:2rem">🧸</div>
+        <h2 id="overlayTitle">LINE FRIENDS 日曆方塊</h2>
+        <p id="overlayDesc">堆疊日期與可愛積木，湊滿整行變成「休」字放假！</p>
+        <button type="button" class="start-btn" id="btnStart">▶️ 開始遊戲</button>
       </div>
     </div>
-
-    <!-- Green Calendar Weekday Strip (Mon ~ Sun) -->
-    <div class="grid grid-cols-7 bg-[#22603C] border-2 border-[#18452B] rounded-lg py-1 px-2 mb-2.5 text-center shadow-inner">
-      <span class="text-xs sm:text-sm font-black text-white/95 tracking-wide">Mon</span>
-      <span class="text-xs sm:text-sm font-black text-white/95 tracking-wide">Tue</span>
-      <span class="text-xs sm:text-sm font-black text-white/95 tracking-wide">Wed</span>
-      <span class="text-xs sm:text-sm font-black text-white/95 tracking-wide">Thu</span>
-      <span class="text-xs sm:text-sm font-black text-white/95 tracking-wide">Fri</span>
-      <span class="text-xs sm:text-sm font-black text-amber-200 tracking-wide">Sat</span>
-      <span class="text-xs sm:text-sm font-black text-amber-200 tracking-wide">Sun</span>
-    </div>
-
-    <!-- Main Playfield + Side Dashboard Grid -->
-    <div class="grid grid-cols-12 gap-2.5 items-stretch">
-
-      <!-- Left/Center: Recessed LEGO Block Playfield -->
-      <div class="col-span-12 sm:col-span-8 flex flex-col items-center justify-center">
-        <div class="recessed-well p-2 relative w-full flex items-center justify-center">
-          <canvas id="gameCanvas" width="320" height="576" class="rounded-lg block max-w-full h-auto shadow-inner cursor-pointer"></canvas>
-
-          <!-- Celebration Floating Banner Overlay -->
-          <div id="celebrationToast" class="pointer-events-none absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 transition-all duration-300 z-20 text-center">
-            <div id="celebrationText" class="px-4 py-2 rounded-2xl bg-amber-400/95 text-[#3A241B] font-black text-lg sm:text-xl shadow-xl border-4 border-white whitespace-nowrap">
-              🏖️ 休假囉！LINE CLEAR!
-            </div>
-          </div>
-
-          <!-- Start / Pause / Game Over Modal Overlay inside Playfield -->
-          <div id="boardOverlay" class="absolute inset-2 rounded-lg bg-[#163D26]/92 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center z-30">
-            <div class="w-16 h-16 rounded-2xl bg-amber-100 border-4 border-white shadow-lg flex items-center justify-center text-3xl mb-2">
-              🧸
-            </div>
-            <h2 id="overlayTitle" class="text-xl sm:text-2xl font-black text-white tracking-wide mb-1">
-              LINE FRIENDS 日曆方塊
-            </h2>
-            <p id="overlayDesc" class="text-xs sm:text-sm text-emerald-100 max-w-[250px] mb-4 leading-relaxed">
-              堆疊可愛樂高凸點「日期方塊」與「圖示方塊」，湊滿整行即可翻轉為<span class="text-amber-300 font-bold">「休」字放假積木</span>並觸發熊大慶祝與啵啵泡泡音！
-            </p>
-            <button id="btnStartGame" type="button" class="tactile-btn px-6 py-2.5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-[#3A241B] font-black text-base tracking-wide border-2 border-white">
-              ▶️ 開始堆疊日曆 (Start)
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Column: Next Block, Hold Block, Scoreboard, Brown Helper Skill, Audio & Controls -->
-      <div class="col-span-12 sm:col-span-4 flex flex-col justify-between gap-2">
-
-        <!-- NEXT & HOLD Mini LEGO Windows -->
-        <div class="grid grid-cols-2 sm:grid-cols-2 gap-2">
-          <div class="bg-[#1F5837] border-2 border-[#153E26] rounded-xl p-2 flex flex-col items-center shadow-inner">
-            <span class="text-[11px] font-black text-emerald-100 tracking-wider mb-1">NEXT 下一個</span>
-            <div class="recessed-well p-1 flex items-center justify-center w-20 h-20">
-              <canvas id="nextCanvas" width="76" height="76"></canvas>
-            </div>
-          </div>
-          <div class="bg-[#1F5837] border-2 border-[#153E26] rounded-xl p-2 flex flex-col items-center shadow-inner">
-            <span class="text-[11px] font-black text-emerald-100 tracking-wider mb-1">HOLD 暫存 (C)</span>
-            <div id="btnHoldBox" class="recessed-well p-1 flex items-center justify-center w-20 h-20 cursor-pointer" title="點擊或按 C 鍵暫存當前積木">
-              <canvas id="holdCanvas" width="76" height="76"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <!-- Score / Holiday / Level Cards -->
-        <div class="bg-[#1F5837] border-2 border-[#153E26] rounded-xl p-2.5 space-y-2 shadow-inner">
-          <div class="flex items-center justify-between bg-[#143B24] px-3 py-1.5 rounded-lg border border-emerald-800/60">
-            <span class="text-xs font-bold text-emerald-200">SCORE 分數</span>
-            <span id="scoreVal" class="text-lg font-black text-amber-300 tracking-wider">0</span>
-          </div>
-          <div class="grid grid-cols-2 gap-1.5">
-            <div class="bg-[#143B24] px-2.5 py-1.5 rounded-lg border border-emerald-800/60 flex flex-col">
-              <span class="text-[10px] font-bold text-emerald-200">🏖️ 休假行數</span>
-              <span id="linesVal" class="text-base font-black text-white">0 天</span>
-            </div>
-            <div class="bg-[#143B24] px-2.5 py-1.5 rounded-lg border border-emerald-800/60 flex flex-col">
-              <span class="text-[10px] font-bold text-emerald-200">⭐ 速度等級</span>
-              <span id="levelVal" class="text-base font-black text-amber-200">Lv.1</span>
-            </div>
-          </div>
-          <div class="flex items-center justify-between bg-[#143B24] px-3 py-1 rounded-lg border border-emerald-800/60">
-            <span class="text-[11px] font-bold text-emerald-200">🏆 最高紀錄</span>
-            <span id="bestVal" class="text-sm font-black text-emerald-100">0</span>
-          </div>
-        </div>
-
-        <!-- Brown Companion Helper Skill Card -->
-        <div class="bg-[#3A241B] border-2 border-[#59382B] rounded-xl p-2.5 text-white shadow-md">
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-xs font-black text-amber-300 flex items-center gap-1">
-              🐻 熊大與莎莉應援
-            </span>
-            <span id="brownChargeTxt" class="text-[11px] font-bold text-amber-100">100% READY!</span>
-          </div>
-          <div class="w-full h-2.5 bg-stone-900 rounded-full overflow-hidden border border-stone-700 mb-2">
-            <div id="brownChargeBar" class="h-full bg-gradient-to-r from-amber-400 via-yellow-300 to-orange-400 transition-all duration-300" style="width: 100%;"></div>
-          </div>
-          <div class="grid grid-cols-2 gap-1.5">
-            <button id="btnBrownHoliday" type="button" class="tactile-btn py-1.5 px-2 rounded-lg bg-amber-400 hover:bg-amber-300 text-[#3A241B] font-black text-xs flex items-center justify-center gap-1">
-              <span>🏖️ 熊大消一行 (B)</span>
-            </button>
-            <button id="btnBrownGift" type="button" class="tactile-btn py-1.5 px-2 rounded-lg bg-orange-400 hover:bg-orange-300 text-[#3A241B] font-black text-xs flex items-center justify-center gap-1">
-              <span>🎁 召喚休假塊 (G)</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Audio Style & Volume Mini Mixer -->
-        <div class="mobile-hide-audio bg-[#1F5837] border-2 border-[#153E26] rounded-xl p-2.5 space-y-1.5 shadow-inner">
-          <div class="flex items-center justify-between">
-            <span class="text-[11px] font-bold text-emerald-100">🎶 俏皮曲風</span>
-            <select id="bgmStyleSelect" class="bg-[#143B24] text-amber-200 text-xs font-bold px-2 py-0.5 rounded border border-emerald-700 focus:outline-none">
-              <option value="party">木琴泡泡派對 (輕快)</option>
-              <option value="stroll">熊大午後散步 (悠閒)</option>
-              <option value="carnival">莎莉歡樂嘉年華 (活潑)</option>
-            </select>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-[11px] font-bold text-emerald-100 whitespace-nowrap">🔊 音量</span>
-            <input id="volumeSlider" type="range" min="0" max="100" value="75" class="w-full accent-amber-400 h-1.5 bg-[#143B24] rounded-lg cursor-pointer" />
-          </div>
-        </div>
-
-        <!-- On-Screen Touch / Mouse Gamepad Controls (desktop / larger screens) -->
-        <div class="desktop-only-controls bg-[#1F5837] border-2 border-[#153E26] rounded-xl p-2 shadow-inner">
-          <div class="grid grid-cols-4 gap-1.5 mb-1.5">
-            <button id="btnLeft" type="button" class="tactile-btn py-2 rounded-lg bg-[#F7F6F0] text-[#3A241B] font-black text-sm hover:bg-white">◀</button>
-            <button id="btnRotate" type="button" class="tactile-btn py-2 rounded-lg bg-[#D9822B] text-white font-black text-xs hover:bg-amber-600">↻ 旋轉</button>
-            <button id="btnDown" type="button" class="tactile-btn py-2 rounded-lg bg-[#F7F6F0] text-[#3A241B] font-black text-sm hover:bg-white">▼</button>
-            <button id="btnRight" type="button" class="tactile-btn py-2 rounded-lg bg-[#F7F6F0] text-[#3A241B] font-black text-sm hover:bg-white">▶</button>
-          </div>
-          <div class="grid grid-cols-3 gap-1.5">
-            <button id="btnHardDrop" type="button" class="tactile-btn col-span-2 py-1.5 rounded-lg bg-[#7393B3] text-white font-black text-xs hover:bg-sky-600">
-              ⏬ 空白鍵：啵啵直接落地
-            </button>
-            <button id="btnPause" type="button" class="tactile-btn py-1.5 rounded-lg bg-emerald-800 text-emerald-100 font-bold text-xs hover:bg-emerald-700">
-              ⏸ 暫停
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Bottom Green Base Plate with Potted Plants & "LINE FRIENDS" Logo (matching photo) -->
-    <div class="mobile-hide-footer mt-3 bg-[#246640] border-2 border-[#19492D] rounded-xl px-4 py-2 flex items-center justify-between relative overflow-hidden shadow-inner">
-      <!-- Ground decorative line -->
-      <div class="absolute bottom-2.5 left-4 right-4 h-[2px] bg-[#133822] opacity-80"></div>
-
-      <!-- Left Cute Potted Plant SVG (Orange Pot + Green Leaves like photo) -->
-      <svg class="w-10 h-10 z-10" viewBox="0 0 64 64">
-        <path d="M12 54 L22 54 M42 54 L50 54" stroke="#102E1C" stroke-width="2.5" stroke-linecap="round"/>
-        <polygon points="24,40 40,40 37,56 27,56" fill="#D9822B" stroke="#183A25" stroke-width="2.2" />
-        <line x1="26" y1="45" x2="36" y2="45" stroke="#FFF" stroke-width="1.6" />
-        <path d="M32 40 C24 30, 18 22, 26 16 C30 22, 31 30, 32 40 Z" fill="#286E46" stroke="#FFFFFF" stroke-width="2" />
-        <path d="M32 40 C40 28, 46 22, 38 14 C34 20, 33 30, 32 40 Z" fill="#286E46" stroke="#FFFFFF" stroke-width="2" />
-        <path d="M32 40 C20 36, 16 32, 22 26 C27 30, 29 35, 32 40 Z" fill="#183A25" stroke="#FFFFFF" stroke-width="1.8" />
-      </svg>
-
-      <!-- Center LINE FRIENDS Text -->
-      <div class="z-10 text-center px-3 bg-[#246640]">
-        <span class="text-xl sm:text-2xl font-black text-white tracking-widest drop-shadow">
-          LINE FRIENDS
-        </span>
-      </div>
-
-      <!-- Right Cute Monstera Potted Plant SVG (Orange Pot + Broad Leaf like photo) -->
-      <svg class="w-10 h-10 z-10" viewBox="0 0 64 64">
-        <path d="M14 54 L22 54 M42 54 L52 54" stroke="#102E1C" stroke-width="2.5" stroke-linecap="round"/>
-        <polygon points="25,42 39,42 37,56 27,56" fill="#D9822B" stroke="#183A25" stroke-width="2.2" />
-        <line x1="27" y1="47" x2="36" y2="47" stroke="#FFF" stroke-width="1.6" />
-        <path d="M32 42 C20 36, 18 20, 31 16 C42 18, 44 34, 32 42 Z" fill="#286E46" stroke="#FFFFFF" stroke-width="2" />
-        <path d="M32 22 L32 38 M26 27 L32 31 M38 26 L32 32" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" />
-      </svg>
-    </div>
-
   </div>
 
-  <!-- Sticky Mobile Gamepad (phones only) -->
-  <div class="mobile-gamepad" id="mobileGamepad">
-    <div class="grid grid-cols-5 gap-2 mb-2">
-      <button id="mBtnLeft" type="button" class="tactile-btn pad-btn bg-[#F7F6F0] text-[#3A241B]">◀</button>
-      <button id="mBtnRotate" type="button" class="tactile-btn pad-btn bg-[#D9822B] text-white">↻</button>
-      <button id="mBtnDown" type="button" class="tactile-btn pad-btn bg-[#F7F6F0] text-[#3A241B]">▼</button>
-      <button id="mBtnRight" type="button" class="tactile-btn pad-btn bg-[#F7F6F0] text-[#3A241B]">▶</button>
-      <button id="mBtnPause" type="button" class="tactile-btn pad-btn bg-emerald-800 text-emerald-100 text-sm">⏸</button>
-    </div>
-    <div class="grid grid-cols-3 gap-2">
-      <button id="mBtnHardDrop" type="button" class="tactile-btn pad-btn-lg col-span-2 bg-[#7393B3] text-white">
-        ⏬ 直接落地
-      </button>
-      <button id="mBtnHold" type="button" class="tactile-btn pad-btn-lg bg-amber-500 text-[#3A241B] text-sm font-black">
-        📦 HOLD
-      </button>
-    </div>
-    <p class="text-center text-[10px] text-emerald-100/80 mt-1.5 font-bold tracking-wide">
-      手機也可在畫面滑動：←→移動　↑旋轉　↓加速　點擊旋轉
-    </p>
+  <div class="controls">
+    <button type="button" class="ctrl-btn" id="btnLeft">◀</button>
+    <button type="button" class="ctrl-btn rotate" id="btnRotate">↻</button>
+    <button type="button" class="ctrl-btn" id="btnDown">▼</button>
+    <button type="button" class="ctrl-btn" id="btnRight">▶</button>
   </div>
-
-  <!-- Help & Controls Modal -->
-  <div id="helpModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
-    <div class="bg-[#FFFDF9] border-4 border-[#286E46] rounded-3xl max-w-md w-full p-5 shadow-2xl text-[#3A241B]">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-black text-[#286E46] flex items-center gap-1.5">
-          🧸 遊戲玩法與音效說明
-        </h3>
-        <button id="btnCloseHelp" type="button" class="w-8 h-8 rounded-full bg-stone-200 hover:bg-stone-300 font-black text-sm">✕</button>
-      </div>
-      <ul class="text-xs sm:text-sm space-y-2 leading-relaxed">
-        <li>🧱 <b>樂高積木外觀</b>：完美還原照片中的圓柱凸點、圓角積木，分為<b>白色日期方塊 (1~31、休)</b> 與<b>四色可愛圖示方塊</b>（兔兔、熊大、小雞、仙人掌、冰淇淋、小花、小鏟子、嫩芽）。</li>
-        <li>🏖️ <b>「休」字慶祝動畫</b>：每當湊滿整行時，整排積木會閃耀翻轉成<b>「休」字放假積木</b>，伴隨泡泡升空與右上角熊大、莎莉跳躍慶祝！</li>
-        <li>🐻 <b>熊大輔助角色技能</b>：消除積木可累積熊大能量；按 <b>B 鍵（熊大消一行）</b>由熊大直接將最底層變成「休」字消除，按 <b>G 鍵（召喚休假塊）</b>讓下一塊直接變成單格百搭「🐻 休假禮盒」！</li>
-        <li>🎵 <b>俏皮背景音樂 & 🫧 泡泡聲效果音</b>：內建 Web Audio 即時合成器，每次移動、旋轉、下落與消除都有不同音高與彈性的晶瑩水泡聲（Bloop & Pop）！</li>
-        <li>⌨️ <b>鍵盤操作</b>：<b>← →</b> 移動、<b>↑ / Z</b> 旋轉、<b>↓</b> 加速、<b>空白鍵</b> 啵啵硬降、<b>C</b> 暫存、<b>P</b> 暫停。</li>
-        <li>📱 <b>手機操作</b>：底部大按鈕、或在遊戲畫面上<strong>左右滑動移動、上滑旋轉、下滑加速、點一下旋轉</strong>。</li>
-      </ul>
-      <button id="btnCloseHelpBottom" type="button" class="tactile-btn mt-4 w-full py-2 rounded-xl bg-[#286E46] text-white font-black text-sm">
-        知道了，繼續遊戲！
-      </button>
-    </div>
+  <div class="controls-extra">
+    <button type="button" class="ctrl-btn drop" id="btnHardDrop">⏬ 直接落地</button>
+    <button type="button" class="ctrl-btn hold" id="btnHold">HOLD</button>
   </div>
 
   <script>
-    /********************************************************************
-     * 1. WEB AUDIO SYNTHESIZER: PLAYFUL BGM & REALISTIC BUBBLE SFX
-     ********************************************************************/
-    class BubbleAudioEngine {
-      constructor() {
-        this.ctx = null;
-        this.bgmEnabled = true;
-        this.sfxEnabled = true;
-        this.volume = 0.75;
-        this.bgmStyle = 'party';
-        this.isPlayingBgm = false;
-        this.stepIndex = 0;
-        this.bgmTimer = null;
-      }
-
+  (function () {
+    const audio = {
+      ctx: null,
+      enabled: true,
       init() {
         if (!this.ctx) {
-          const AudioCtx = window.AudioContext || window.webkitAudioContext;
-          if (AudioCtx) {
-            this.ctx = new AudioCtx();
-          }
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) this.ctx = new AC();
         }
-        if (this.ctx && this.ctx.state === 'suspended') {
-          this.ctx.resume();
-        }
-      }
-
-      setVolume(val) {
-        this.volume = Math.max(0, Math.min(1, val));
-      }
-
-      /**
-       * Core Acoustic Bubble Pop Generator:
-       * Real water bubbles produce a sine wave whose pitch sweeps exponentially upward
-       * as the resonant cavity shrinks, followed by a tiny high-frequency pop impulse.
-       */
-      spawnSingleBubble(startFreq, endFreq, durationSec, delaySec = 0, gainScale = 1.0) {
-        if (!this.sfxEnabled || this.volume <= 0.01) return;
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+      },
+      bubble(start, end, dur, delay, vol) {
+        if (!this.enabled) return;
         this.init();
         if (!this.ctx) return;
-
-        const now = this.ctx.currentTime + delaySec;
-        const osc = this.ctx.createOscillator();
-        const subOsc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(startFreq, now);
-        // Classic water droplet exponential upward pitch bend
-        osc.frequency.exponentialRampToValueAtTime(endFreq, now + durationSec);
-
-        // Subtle second harmonic for glossy cartoon bubble timbre
-        subOsc.type = 'triangle';
-        subOsc.frequency.setValueAtTime(startFreq * 1.5, now);
-        subOsc.frequency.exponentialRampToValueAtTime(endFreq * 1.5, now + durationSec);
-
-        const subGain = this.ctx.createGain();
-        subGain.gain.setValueAtTime(0.18, now);
-        subGain.gain.exponentialRampToValueAtTime(0.001, now + durationSec);
-
-        const peakGain = Math.min(0.45, 0.26 * this.volume * gainScale);
-        gain.gain.setValueAtTime(0.001, now);
-        gain.gain.linearRampToValueAtTime(peakGain, now + durationSec * 0.22);
-        gain.gain.exponentialRampToValueAtTime(0.0008, now + durationSec);
-
-        osc.connect(gain);
-        subOsc.connect(subGain);
-        subGain.connect(gain);
-        gain.connect(this.ctx.destination);
-
-        osc.start(now);
-        subOsc.start(now);
-        osc.stop(now + durationSec + 0.01);
-        subOsc.stop(now + durationSec + 0.01);
-      }
-
-      playBubbleSfx(type) {
-        if (!this.sfxEnabled) return;
-        this.init();
-        if (!this.ctx) return;
-
-        switch (type) {
-          case 'move':
-            // Crisp playful single water bubble bloop
-            this.spawnSingleBubble(350, 760, 0.058, 0, 0.85);
-            break;
-
-          case 'softdrop':
-            // Soft low bubble
-            this.spawnSingleBubble(280, 540, 0.045, 0, 0.65);
-            break;
-
-          case 'rotate':
-            // Double playful bubble pop ("bloop-bip!")
-            this.spawnSingleBubble(340, 720, 0.055, 0, 0.9);
-            this.spawnSingleBubble(520, 1120, 0.065, 0.045, 1.0);
-            break;
-
-          case 'hold':
-            // Suction + pop bubble
-            this.spawnSingleBubble(680, 320, 0.06, 0, 0.8);
-            this.spawnSingleBubble(420, 920, 0.075, 0.055, 0.95);
-            break;
-
-          case 'lock':
-            // Gentle plump landing bubble
-            this.spawnSingleBubble(240, 520, 0.07, 0, 0.9);
-            this.spawnSingleBubble(460, 880, 0.05, 0.04, 0.75);
-            break;
-
-          case 'harddrop':
-            // Elastic bouncy bubble splash (deep plop + 3 rising fizz bubbles)
-            this.spawnSingleBubble(190, 460, 0.085, 0, 1.15);
-            this.spawnSingleBubble(420, 880, 0.06, 0.035, 0.95);
-            this.spawnSingleBubble(560, 1150, 0.06, 0.07, 0.9);
-            this.spawnSingleBubble(720, 1420, 0.055, 0.105, 0.85);
-            break;
-
-          case 'clear': {
-            // Sparkling Holiday Bubble Cascade + Toy Chime!
-            const scale = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5, 1174.66, 1318.5];
-            for (let i = 0; i < 8; i++) {
-              const base = scale[i % scale.length];
-              this.spawnSingleBubble(base * 0.65, base * 1.35, 0.075, i * 0.042, 1.05);
-            }
-            // Cheerful glockenspiel chord
-            [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
-              this.playToyNote(freq, 0.28, idx * 0.055, 'triangle', 0.55);
-            });
-            break;
-          }
-
-          case 'brown_skill': {
-            // Cute Brown celebration fanfare + giant bubble burst
-            const fanfare = [392.0, 523.25, 659.25, 783.99, 1046.5];
-            fanfare.forEach((f, i) => {
-              this.spawnSingleBubble(f * 0.7, f * 1.45, 0.08, i * 0.05, 1.15);
-              this.playToyNote(f, 0.22, i * 0.055, 'sine', 0.65);
-            });
-            break;
-          }
-
-          case 'test': {
-            // Fun 5-bubble rhythmic cascade for testing
-            const pitches = [300, 400, 520, 660, 820];
-            pitches.forEach((p, i) => {
-              this.spawnSingleBubble(p, p * 2.15, 0.07, i * 0.055, 1.1);
-            });
-            break;
-          }
-        }
-      }
-
-      playToyNote(freq, duration, delay = 0, wave = 'triangle', volBoost = 0.5) {
-        if (!this.ctx || this.volume <= 0.01) return;
+        delay = delay || 0;
+        vol = vol == null ? 0.9 : vol;
         const now = this.ctx.currentTime + delay;
         const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = wave;
-        osc.frequency.setValueAtTime(freq, now);
-
-        // Slight playful pitch bounce at attack (toy marimba feel)
-        osc.frequency.setValueAtTime(freq * 1.03, now);
-        osc.frequency.exponentialRampToValueAtTime(freq, now + 0.025);
-
-        const amp = Math.min(0.35, 0.14 * this.volume * volBoost);
-        gain.gain.setValueAtTime(0.001, now);
-        gain.gain.linearRampToValueAtTime(amp, now + 0.012);
-        gain.gain.exponentialRampToValueAtTime(0.0008, now + duration);
-
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
+        const g = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(start, now);
+        osc.frequency.exponentialRampToValueAtTime(end, now + dur);
+        g.gain.setValueAtTime(0.001, now);
+        g.gain.linearRampToValueAtTime(0.22 * vol, now + dur * 0.2);
+        g.gain.exponentialRampToValueAtTime(0.0008, now + dur);
+        osc.connect(g);
+        g.connect(this.ctx.destination);
         osc.start(now);
-        osc.stop(now + duration + 0.01);
+        osc.stop(now + dur + 0.02);
+      },
+      sfx(type) {
+        if (!this.enabled) return;
+        if (type === 'move') this.bubble(350, 760, 0.055, 0, 0.8);
+        else if (type === 'rotate') { this.bubble(340, 720, 0.05); this.bubble(520, 1100, 0.06, 0.04); }
+        else if (type === 'soft') this.bubble(280, 540, 0.04, 0, 0.6);
+        else if (type === 'lock') this.bubble(240, 520, 0.07);
+        else if (type === 'hard') { this.bubble(190, 460, 0.08, 0, 1.1); this.bubble(560, 1200, 0.055, 0.06); }
+        else if (type === 'clear') [523, 659, 784, 1047].forEach(function(f, i) { audio.bubble(f * 0.7, f * 1.3, 0.07, i * 0.04, 1); });
+        else if (type === 'hold') this.bubble(680, 320, 0.06);
       }
+    };
 
-      startBgm() {
-        this.init();
-        if (this.bgmTimer) clearInterval(this.bgmTimer);
-        this.isPlayingBgm = true;
-
-        // 16th-note step sequencer (playful bouncy tempo ~ 170ms per step)
-        this.bgmTimer = setInterval(() => {
-          if (!this.bgmEnabled || !this.isPlayingBgm || !this.ctx) return;
-          if (this.ctx.state === 'suspended') return;
-          this.tickSequencer();
-        }, 165);
-      }
-
-      stopBgm() {
-        this.isPlayingBgm = false;
-        if (this.bgmTimer) {
-          clearInterval(this.bgmTimer);
-          this.bgmTimer = null;
-        }
-      }
-
-      tickSequencer() {
-        // Note frequencies
-        const N = {
-          C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
-          C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
-          C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, C6: 1046.50
-        };
-
-        // 32-step playful melodies
-        const patterns = {
-          party: {
-            lead: [
-              N.E5, 0, N.G5, N.E5, N.C5, 0, N.D5, 0,
-              N.E5, N.G5, N.A5, N.G5, N.E5, 0, N.G5, 0,
-              N.F5, 0, N.A5, N.F5, N.D5, 0, N.G5, 0,
-              N.E5, N.D5, N.C5, N.D5, N.E5, N.G5, N.C6, 0
-            ],
-            bass: [
-              N.C3, 0, N.G3, 0, N.C3, 0, N.G3, 0,
-              N.A3, 0, N.E3, 0, N.A3, 0, N.E3, 0,
-              N.F3, 0, N.C4, 0, N.G3, 0, N.D4, 0,
-              N.C3, 0, N.G3, 0, N.C4, 0, N.G3, 0
-            ]
-          },
-          stroll: {
-            lead: [
-              N.G5, 0, N.E5, 0, N.C5, N.D5, N.E5, 0,
-              N.A5, 0, N.G5, 0, N.E5, 0, N.D5, 0,
-              N.F5, 0, N.E5, 0, N.D5, N.E5, N.G5, 0,
-              N.E5, 0, N.D5, 0, N.C5, 0, 0, 0
-            ],
-            bass: [
-              N.C3, 0, 0, N.G3, N.C3, 0, N.G3, 0,
-              N.F3, 0, 0, N.C4, N.F3, 0, N.C4, 0,
-              N.G3, 0, 0, N.D4, N.G3, 0, N.D4, 0,
-              N.C3, 0, N.G3, 0, N.C4, 0, 0, 0
-            ]
-          },
-          carnival: {
-            lead: [
-              N.C5, N.E5, N.G5, N.E5, N.A5, N.G5, N.E5, N.C5,
-              N.D5, N.F5, N.A5, N.F5, N.G5, 0, N.G5, 0,
-              N.E5, N.G5, N.C6, N.G5, N.A5, N.F5, N.D5, N.F5,
-              N.E5, N.G5, N.D5, N.B4, N.C5, 0, N.C6, 0
-            ],
-            bass: [
-              N.C3, N.G3, N.C3, N.G3, N.F3, N.C4, N.F3, N.C4,
-              N.D3, N.A3, N.D3, N.A3, N.G3, N.D4, N.G3, N.D4,
-              N.C3, N.G3, N.E3, N.G3, N.F3, N.C4, N.D3, N.A3,
-              N.G3, N.D4, N.G3, N.B3, N.C4, 0, N.C3, 0
-            ]
-          }
-        };
-
-        const pat = patterns[this.bgmStyle] || patterns.party;
-        const step = this.stepIndex % 32;
-        const leadNote = pat.lead[step];
-        const bassNote = pat.bass[step];
-
-        if (leadNote) {
-          this.playToyNote(leadNote, 0.14, 0, 'triangle', 0.45);
-          // Harmonic sparkle
-          this.playToyNote(leadNote * 2, 0.08, 0, 'sine', 0.16);
-        }
-        if (bassNote) {
-          this.playToyNote(bassNote, 0.16, 0, 'sine', 0.55);
-        }
-        // Subtle off-beat micro-bubble rhythm on steps 2, 6, 10, 14...
-        if (step % 4 === 2 && this.sfxEnabled) {
-          this.spawnSingleBubble(520, 880, 0.032, 0, 0.25);
-        }
-
-        this.stepIndex = (this.stepIndex + 1) % 32;
-      }
-    }
-
-    const audio = new BubbleAudioEngine();
-
-    /********************************************************************
-     * 2. CALENDAR TETRIS BLOCK DEFINITIONS & CUSTOM LEGO TILE RENDERER
-     ********************************************************************/
+    // 10 columns x 18 rows — larger cells, readable on small phones
     const COLS = 10;
     const ROWS = 18;
-    let CELL = 32; // Dynamic cell size (px) — resized to fit phone screen
+    let CELL = 28;
 
-    // Palette matching the user's LINE FRIENDS LEGO Calendar photo
     const PALETTE = {
       white:  { fill: '#F7F6F0', stud: '#EAE8DF', border: '#C9C5B8', text: '#3A241B' },
       green:  { fill: '#2F7D53', stud: '#398F61', border: '#1B5234', text: '#FFFFFF' },
@@ -1106,396 +335,84 @@
       blue:   { fill: '#7393B3', stud: '#87A7C7', border: '#4C6B8A', text: '#FFFFFF' },
       holiday:{ fill: '#FFF3C4', stud: '#FFE07D', border: '#D99B26', text: '#C83E2B' }
     };
-
-    const ICON_TYPES = [
-      { id: 'cony',     color: 'orange', label: '兔兔' },
-      { id: 'brown',    color: 'brown',  label: '熊大' },
-      { id: 'sally',    color: 'blue',   label: '莎莉' },
-      { id: 'cactus',   color: 'green',  label: '仙人掌' },
-      { id: 'icecream', color: 'orange', label: '冰淇淋' },
-      { id: 'flower',   color: 'brown',  label: '小花' },
-      { id: 'trowel',   color: 'blue',   label: '小鏟子' },
-      { id: 'sprout',   color: 'green',  label: '嫩芽' }
+    const ICONS = [
+      { id: 'cony', color: 'orange' },
+      { id: 'brown', color: 'brown' },
+      { id: 'sally', color: 'blue' },
+      { id: 'cactus', color: 'green' },
+      { id: 'icecream', color: 'orange' },
+      { id: 'flower', color: 'brown' },
+      { id: 'sprout', color: 'green' }
     ];
-
     const SHAPES = [
-      // I
-      [[1, 1, 1, 1]],
-      // O
-      [[1, 1], [1, 1]],
-      // T
-      [[0, 1, 0], [1, 1, 1]],
-      // L
-      [[0, 0, 1], [1, 1, 1]],
-      // J
-      [[1, 0, 0], [1, 1, 1]],
-      // S
-      [[0, 1, 1], [1, 1, 0]],
-      // Z
-      [[1, 1, 0], [0, 1, 1]]
+      [[1,1,1,1]],
+      [[1,1],[1,1]],
+      [[0,1,0],[1,1,1]],
+      [[0,0,1],[1,1,1]],
+      [[1,0,0],[1,1,1]],
+      [[0,1,1],[1,1,0]],
+      [[1,1,0],[0,1,1]]
     ];
 
-    const MONTHS = [
-      { num: '10', name: 'Oct' },
-      { num: '11', name: 'Nov' },
-      { num: '12', name: 'Dec' },
-      { num: '1',  name: 'Jan' },
-      { num: '2',  name: 'Feb' },
-      { num: '3',  name: 'Mar' },
-      { num: '4',  name: 'Apr' },
-      { num: '5',  name: 'May' },
-      { num: '6',  name: 'Jun' },
-      { num: '7',  name: 'Jul' },
-      { num: '8',  name: 'Aug' },
-      { num: '9',  name: 'Sep' }
-    ];
-
-    // Visual floating soap bubbles for bubble-sound feedback
-    let visualBubbles = [];
-    let clearingRows = [];
-    let clearAnimTimer = 0;
-
-    function spawnVisualBubbles(px, py, count = 4, isGold = false) {
-      for (let i = 0; i < count; i++) {
-        visualBubbles.push({
-          x: px + (Math.random() - 0.5) * 28,
-          y: py + (Math.random() - 0.5) * 18,
-          r: 3.5 + Math.random() * 6.5,
-          vx: (Math.random() - 0.5) * 1.3,
-          vy: -1.1 - Math.random() * 1.8,
-          alpha: 0.92,
-          isGold
-        });
-      }
-    }
-
-    // Draw a single 3D LEGO-style Calendar Block Tile at (px, py) with size s
-    function drawLegoCalendarTile(ctx, px, py, s, cellData, alpha = 1.0) {
-      if (!cellData) return;
-      ctx.save();
-      ctx.globalAlpha = alpha;
-
-      const pal = PALETTE[cellData.colorKey] || PALETTE.white;
-      const pad = 1.2;
-      const bx = px + pad;
-      const by = py + pad + 2.5; // Leave room at top for cylindrical LEGO stud
-      const bw = s - pad * 2;
-      const bh = s - pad * 2 - 2.5;
-      const radius = 5.5;
-
-      // 1. Cylindrical Top LEGO Stud (圓柱凸點)
-      const studW = bw * 0.48;
-      const studH = 4.5;
-      const studX = bx + (bw - studW) / 2;
-      const studY = py + 0.8;
-
-      ctx.fillStyle = pal.stud;
-      ctx.strokeStyle = pal.border;
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.roundRect(studX, studY, studW, studH + 2, [3, 3, 0, 0]);
-      ctx.fill();
-      ctx.stroke();
-
-      // Stud highlight
-      ctx.fillStyle = 'rgba(255,255,255,0.45)';
-      ctx.fillRect(studX + 2, studY + 1, studW * 0.35, 2);
-
-      // 2. Main Rounded Block Body
-      ctx.fillStyle = pal.fill;
-      ctx.strokeStyle = pal.border;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.roundRect(bx, by, bw, bh, radius);
-      ctx.fill();
-      ctx.stroke();
-
-      // 3. Top-left 3D plastic specular bevel & bottom shadow
-      ctx.strokeStyle = 'rgba(255,255,255,0.55)';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(bx + 3, by + bh - 4);
-      ctx.lineTo(bx + 3, by + 3);
-      ctx.lineTo(bx + bw - 4, by + 3);
-      ctx.stroke();
-
-      ctx.strokeStyle = 'rgba(0,0,0,0.16)';
-      ctx.beginPath();
-      ctx.moveTo(bx + 4, by + bh - 2.2);
-      ctx.lineTo(bx + bw - 3, by + bh - 2.2);
-      ctx.lineTo(bx + bw - 2.2, by + 4);
-      ctx.stroke();
-
-      // 4. Foreground Content: Date Number, "休", or Cute Line-Art Icon
-      const cx = bx + bw / 2;
-      const cy = by + bh / 2 + 0.5;
-
-      if (cellData.kind === 'holiday') {
-        // Glowing "休" tile
-        ctx.fillStyle = pal.text;
-        ctx.font = `900 ${Math.round(s * 0.48)}px "Noto Sans TC", sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('休', cx, cy + 0.5);
-      } else if (cellData.kind === 'date') {
-        ctx.fillStyle = pal.text;
-        ctx.font = `800 ${Math.round(s * 0.44)}px "Fredoka", "Noto Sans TC", sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(String(cellData.label), cx, cy + 0.5);
-      } else if (cellData.kind === 'icon') {
-        drawCuteBlockIcon(ctx, cx, cy, s * 0.34, cellData.iconId, pal.text);
-      }
-
-      ctx.restore();
-    }
-
-    // Crisp custom hand-drawn style icons matching the LINE FRIENDS calendar blocks
-    function drawCuteBlockIcon(ctx, cx, cy, r, iconId, strokeColor) {
-      ctx.save();
-      ctx.strokeStyle = strokeColor;
-      ctx.fillStyle = strokeColor;
-      ctx.lineWidth = 1.7;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-
-      switch (iconId) {
-        case 'cony': {
-          // Cute Cony Rabbit Face
-          ctx.beginPath();
-          ctx.ellipse(cx - r * 0.28, cy - r * 0.55, r * 0.18, r * 0.42, -0.1, 0, Math.PI * 2);
-          ctx.ellipse(cx + r * 0.28, cy - r * 0.55, r * 0.18, r * 0.42, 0.1, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(cx, cy + r * 0.15, r * 0.62, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(cx - r * 0.22, cy + r * 0.08, 1.3, 0, Math.PI * 2);
-          ctx.arc(cx + r * 0.22, cy + r * 0.08, 1.3, 0, Math.PI * 2);
-          ctx.fill();
-          break;
-        }
-        case 'brown': {
-          // Cute Brown Bear Face
-          ctx.beginPath();
-          ctx.arc(cx - r * 0.52, cy - r * 0.42, r * 0.24, 0, Math.PI * 2);
-          ctx.arc(cx + r * 0.52, cy - r * 0.42, r * 0.24, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(cx, cy + r * 0.06, r * 0.68, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(cx - r * 0.18, cy - r * 0.05, 1.3, 0, Math.PI * 2);
-          ctx.arc(cx + r * 0.18, cy - r * 0.05, 1.3, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.moveTo(cx, cy + r * 0.08);
-          ctx.lineTo(cx, cy + r * 0.32);
-          ctx.moveTo(cx - r * 0.18, cy + r * 0.44);
-          ctx.lineTo(cx, cy + r * 0.32);
-          ctx.lineTo(cx + r * 0.18, cy + r * 0.44);
-          ctx.stroke();
-          break;
-        }
-        case 'sally': {
-          // Cute Sally Chick
-          ctx.beginPath();
-          ctx.arc(cx, cy + r * 0.05, r * 0.68, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(cx - r * 0.24, cy - r * 0.08, 1.4, 0, Math.PI * 2);
-          ctx.arc(cx + r * 0.24, cy - r * 0.08, 1.4, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.ellipse(cx, cy + r * 0.22, r * 0.28, r * 0.14, 0, 0, Math.PI * 2);
-          ctx.stroke();
-          break;
-        }
-        case 'cactus': {
-          // Potted Cactus (just like left green tile in photo!)
-          ctx.beginPath();
-          ctx.moveTo(cx - r * 0.4, cy + r * 0.25);
-          ctx.lineTo(cx + r * 0.4, cy + r * 0.25);
-          ctx.lineTo(cx + r * 0.28, cy + r * 0.78);
-          ctx.lineTo(cx - r * 0.28, cy + r * 0.78);
-          ctx.closePath();
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.ellipse(cx, cy - r * 0.2, r * 0.32, r * 0.48, 0, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(cx - r * 0.45, cy - r * 0.15, r * 0.2, 0, Math.PI * 2);
-          ctx.arc(cx + r * 0.45, cy - r * 0.22, r * 0.18, 0, Math.PI * 2);
-          ctx.stroke();
-          break;
-        }
-        case 'icecream': {
-          // Cute Ice Cream Cone (like bottom-left orange tile in photo!)
-          ctx.beginPath();
-          ctx.moveTo(cx - r * 0.36, cy + r * 0.1);
-          ctx.lineTo(cx + r * 0.36, cy + r * 0.1);
-          ctx.lineTo(cx, cy + r * 0.82);
-          ctx.closePath();
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(cx, cy - r * 0.15, r * 0.42, Math.PI, 0);
-          ctx.arc(cx, cy - r * 0.48, r * 0.26, Math.PI, 0);
-          ctx.stroke();
-          break;
-        }
-        case 'flower': {
-          // Cute Tulip Flower (like brown tile in photo!)
-          ctx.beginPath();
-          ctx.arc(cx, cy - r * 0.2, r * 0.42, 0, Math.PI);
-          ctx.lineTo(cx - r * 0.42, cy - r * 0.55);
-          ctx.lineTo(cx - r * 0.15, cy - r * 0.32);
-          ctx.lineTo(cx, cy - r * 0.62);
-          ctx.lineTo(cx + r * 0.15, cy - r * 0.32);
-          ctx.lineTo(cx + r * 0.42, cy - r * 0.55);
-          ctx.closePath();
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(cx, cy + r * 0.22);
-          ctx.lineTo(cx, cy + r * 0.8);
-          ctx.moveTo(cx, cy + r * 0.55);
-          ctx.lineTo(cx + r * 0.38, cy + r * 0.35);
-          ctx.stroke();
-          break;
-        }
-        case 'trowel': {
-          // Cute Garden Trowel (like light-blue tile in photo!)
-          ctx.beginPath();
-          ctx.moveTo(cx - r * 0.55, cy + r * 0.55);
-          ctx.lineTo(cx - r * 0.1, cy + r * 0.1);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(cx - r * 0.25, cy - r * 0.05);
-          ctx.lineTo(cx + r * 0.55, cy - r * 0.55);
-          ctx.lineTo(cx + r * 0.05, cy + r * 0.25);
-          ctx.closePath();
-          ctx.stroke();
-          break;
-        }
-        default: {
-          // Cute Leaf / Sprout
-          ctx.beginPath();
-          ctx.ellipse(cx, cy, r * 0.55, r * 0.35, -Math.PI / 4, 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(cx - r * 0.38, cy + r * 0.38);
-          ctx.lineTo(cx + r * 0.32, cy - r * 0.32);
-          ctx.stroke();
-          break;
-        }
-      }
-      ctx.restore();
-    }
-
-    /********************************************************************
-     * 3. GAME STATE & CORE TETRIS LOGIC
-     ********************************************************************/
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-    const nextCanvas = document.getElementById('nextCanvas');
-    const nextCtx = nextCanvas.getContext('2d');
-    const holdCanvas = document.getElementById('holdCanvas');
-    const holdCtx = holdCanvas.getContext('2d');
+    const overlay = document.getElementById('overlay');
+    const toastEl = document.getElementById('toast');
 
     let board = [];
-    let currentPiece = null;
-    let nextPiece = null;
-    let holdPiece = null;
+    let current = null;
+    let next = null;
+    let hold = null;
     let canHold = true;
     let dateCounter = 1;
-    let monthIndex = 0;
+    let score = 0, lines = 0, level = 1;
+    let isRunning = false, isPaused = false, isGameOver = false;
+    let lastDrop = 0, animId = null, clearTimer = 0;
+    let best = 0;
+    try { best = parseInt(localStorage.getItem('lf_cal_tetris_best') || '0', 10) || 0; } catch (e) {}
 
-    let score = 0;
-    let bestScore = 0;
-    let holidayLines = 0;
-    let level = 1;
-    let brownCharge = 100; // Start at 100% so player can try Brown's skill right away!
-
-    let isRunning = false;
-    let isPaused = false;
-    let isGameOver = false;
-    let lastDropTime = 0;
-    let animFrameId = null;
-
-    // Load best score safely
-    try {
-      const saved = localStorage.getItem('line_friends_calendar_tetris_best');
-      if (saved) bestScore = parseInt(saved, 10) || 0;
-    } catch (e) {}
-    document.getElementById('bestVal').textContent = bestScore;
-
-    function createEmptyBoard() {
-      return Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+    function emptyBoard() {
+      return Array.from({ length: ROWS }, function() { return Array(COLS).fill(null); });
     }
 
-    function generateCellMetadata(forceHoliday = false) {
-      if (forceHoliday || Math.random() < 0.14) {
-        return { kind: 'holiday', colorKey: 'holiday', label: '休' };
-      }
-      // 52% Date block (1..31), 48% Cute Icon block
-      if (Math.random() < 0.52) {
+    function makeCell() {
+      if (Math.random() < 0.12) return { kind: 'holiday', colorKey: 'holiday', label: '休' };
+      if (Math.random() < 0.55) {
         const d = dateCounter;
         dateCounter = (dateCounter % 31) + 1;
         return { kind: 'date', colorKey: 'white', label: d };
-      } else {
-        const pick = ICON_TYPES[Math.floor(Math.random() * ICON_TYPES.length)];
-        return { kind: 'icon', colorKey: pick.color, iconId: pick.id, label: pick.label };
       }
+      const ic = ICONS[Math.floor(Math.random() * ICONS.length)];
+      return { kind: 'icon', colorKey: ic.color, iconId: ic.id };
     }
 
-    function createRandomPiece(isBrownSpecial = false) {
-      if (isBrownSpecial) {
-        // Brown's 1x1 Golden Holiday Gift Block!
-        const cellMeta = { kind: 'holiday', colorKey: 'holiday', label: '休' };
-        return {
-          matrix: [[cellMeta]],
-          x: Math.floor(COLS / 2),
-          y: 0,
-          isSpecial: true
-        };
-      }
-
-      const shapeTemplate = SHAPES[Math.floor(Math.random() * SHAPES.length)];
-      // Decide whether this tetromino is a cohesive Icon Piece, Date Run Piece, or Mixed Calendar Piece
-      const modeRoll = Math.random();
-      const chosenIcon = ICON_TYPES[Math.floor(Math.random() * ICON_TYPES.length)];
-
-      const matrix = shapeTemplate.map(row =>
-        row.map(val => {
-          if (!val) return null;
-          if (modeRoll < 0.45) {
-            // Sequential white calendar dates
+    function makePiece() {
+      const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+      const mode = Math.random();
+      const ic = ICONS[Math.floor(Math.random() * ICONS.length)];
+      const matrix = shape.map(function(row) {
+        return row.map(function(v) {
+          if (!v) return null;
+          if (mode < 0.5) {
             const d = dateCounter;
             dateCounter = (dateCounter % 31) + 1;
             return { kind: 'date', colorKey: 'white', label: d };
-          } else if (modeRoll < 0.85) {
-            // Matching themed icon block
-            return { kind: 'icon', colorKey: chosenIcon.color, iconId: chosenIcon.id, label: chosenIcon.label };
-          } else {
-            return generateCellMetadata(false);
           }
-        })
-      );
-
-      return {
-        matrix,
-        x: Math.floor((COLS - matrix[0].length) / 2),
-        y: 0,
-        isSpecial: false
-      };
+          if (mode < 0.88) return { kind: 'icon', colorKey: ic.color, iconId: ic.id };
+          return makeCell();
+        });
+      });
+      return { matrix: matrix, x: Math.floor((COLS - matrix[0].length) / 2), y: 0 };
     }
 
-    function collides(piece, offsetX = 0, offsetY = 0, testMatrix = null) {
-      const mat = testMatrix || piece.matrix;
-      for (let r = 0; r < mat.length; r++) {
-        for (let c = 0; c < mat[r].length; c++) {
-          if (!mat[r][c]) continue;
-          const nx = piece.x + c + offsetX;
-          const ny = piece.y + r + offsetY;
+    function collides(piece, ox, oy, mat) {
+      ox = ox || 0; oy = oy || 0;
+      const m = mat || piece.matrix;
+      for (let r = 0; r < m.length; r++) {
+        for (let c = 0; c < m[r].length; c++) {
+          if (!m[r][c]) continue;
+          const nx = piece.x + c + ox;
+          const ny = piece.y + r + oy;
           if (nx < 0 || nx >= COLS || ny >= ROWS) return true;
           if (ny >= 0 && board[ny][nx]) return true;
         }
@@ -1503,819 +420,453 @@
       return false;
     }
 
-    function rotateMatrixCW(mat) {
-      const rows = mat.length;
-      const cols = mat[0].length;
-      const res = Array.from({ length: cols }, () => Array(rows).fill(null));
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          res[c][rows - 1 - r] = mat[r][c];
-        }
-      }
-      return res;
+    function rotateCW(mat) {
+      const R = mat.length, C = mat[0].length;
+      const out = Array.from({ length: C }, function() { return Array(R).fill(null); });
+      for (let r = 0; r < R; r++)
+        for (let c = 0; c < C; c++)
+          out[c][R - 1 - r] = mat[r][c];
+      return out;
     }
 
-    function movePiece(dx) {
-      if (!isRunning || isPaused || isGameOver || clearAnimTimer > 0) return;
-      if (!collides(currentPiece, dx, 0)) {
-        currentPiece.x += dx;
-        audio.playBubbleSfx('move');
-        spawnVisualBubbles((currentPiece.x + 1) * CELL, (currentPiece.y + 1) * CELL, 2);
-        renderAll();
+    function move(dx) {
+      if (!isRunning || isPaused || isGameOver || clearTimer) return;
+      if (!collides(current, dx, 0)) {
+        current.x += dx;
+        audio.sfx('move');
+        draw();
       }
     }
 
-    function rotatePiece() {
-      if (!isRunning || isPaused || isGameOver || clearAnimTimer > 0) return;
-      const rotated = rotateMatrixCW(currentPiece.matrix);
-      // Wall kick offsets
+    function rotate() {
+      if (!isRunning || isPaused || isGameOver || clearTimer) return;
+      const rot = rotateCW(current.matrix);
       const kicks = [0, -1, 1, -2, 2];
-      for (const k of kicks) {
-        if (!collides(currentPiece, k, 0, rotated)) {
-          currentPiece.matrix = rotated;
-          currentPiece.x += k;
-          audio.playBubbleSfx('rotate');
-          spawnVisualBubbles((currentPiece.x + 1) * CELL, (currentPiece.y + 1) * CELL, 4);
-          renderAll();
+      for (let i = 0; i < kicks.length; i++) {
+        const k = kicks[i];
+        if (!collides(current, k, 0, rot)) {
+          current.matrix = rot;
+          current.x += k;
+          audio.sfx('rotate');
+          draw();
           return;
         }
       }
     }
 
     function softDrop() {
-      if (!isRunning || isPaused || isGameOver || clearAnimTimer > 0) return;
-      if (!collides(currentPiece, 0, 1)) {
-        currentPiece.y += 1;
+      if (!isRunning || isPaused || isGameOver || clearTimer) return;
+      if (!collides(current, 0, 1)) {
+        current.y += 1;
         score += 1;
-        audio.playBubbleSfx('softdrop');
+        audio.sfx('soft');
         updateHud();
-        renderAll();
+        draw();
       } else {
-        lockPiece();
+        lock();
       }
-      lastDropTime = performance.now();
+      lastDrop = performance.now();
     }
 
     function hardDrop() {
-      if (!isRunning || isPaused || isGameOver || clearAnimTimer > 0) return;
-      let dropped = 0;
-      while (!collides(currentPiece, 0, 1)) {
-        currentPiece.y += 1;
-        dropped++;
-      }
-      score += dropped * 2;
-      audio.playBubbleSfx('harddrop');
-      spawnVisualBubbles((currentPiece.x + 1) * CELL, (currentPiece.y + 1) * CELL, 8);
+      if (!isRunning || isPaused || isGameOver || clearTimer) return;
+      let n = 0;
+      while (!collides(current, 0, 1)) { current.y++; n++; }
+      score += n * 2;
+      audio.sfx('hard');
       updateHud();
-      lockPiece();
-      lastDropTime = performance.now();
+      lock();
+      lastDrop = performance.now();
     }
 
-    function holdCurrentPiece() {
-      if (!isRunning || isPaused || isGameOver || !canHold || clearAnimTimer > 0) return;
-      audio.playBubbleSfx('hold');
-      if (!holdPiece) {
-        holdPiece = currentPiece;
-        currentPiece = nextPiece;
-        nextPiece = createRandomPiece();
+    function doHold() {
+      if (!isRunning || isPaused || isGameOver || !canHold || clearTimer) return;
+      audio.sfx('hold');
+      if (!hold) {
+        hold = current;
+        current = next;
+        next = makePiece();
       } else {
-        const temp = currentPiece;
-        currentPiece = holdPiece;
-        holdPiece = temp;
+        const t = current;
+        current = hold;
+        hold = t;
       }
-      currentPiece.x = Math.floor((COLS - currentPiece.matrix[0].length) / 2);
-      currentPiece.y = 0;
+      current.x = Math.floor((COLS - current.matrix[0].length) / 2);
+      current.y = 0;
       canHold = false;
-      renderSidePreviews();
-      renderAll();
+      draw();
     }
 
-    function lockPiece() {
-      const mat = currentPiece.matrix;
-      for (let r = 0; r < mat.length; r++) {
-        for (let c = 0; c < mat[r].length; c++) {
-          if (!mat[r][c]) continue;
-          const by = currentPiece.y + r;
-          const bx = currentPiece.x + c;
-          if (by < 0) {
-            triggerGameOver();
-            return;
-          }
-          board[by][bx] = mat[r][c];
-          // If it's a special Brown Holiday piece, convert neighbors to '休' for extra fun!
-          if (currentPiece.isSpecial) {
-            [[0,1],[0,-1],[1,0],[-1,0]].forEach(([dr, dc]) => {
-              const nr = by + dr, nc = bx + dc;
-              if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && board[nr][nc]) {
-                board[nr][nc] = { kind: 'holiday', colorKey: 'holiday', label: '休' };
-              }
-            });
-          }
+    function lock() {
+      const m = current.matrix;
+      for (let r = 0; r < m.length; r++) {
+        for (let c = 0; c < m[r].length; c++) {
+          if (!m[r][c]) continue;
+          const by = current.y + r, bx = current.x + c;
+          if (by < 0) { gameOver(); return; }
+          board[by][bx] = m[r][c];
         }
       }
-
-      audio.playBubbleSfx('lock');
-      brownCharge = Math.min(100, brownCharge + 10);
-      checkAndClearLines();
+      audio.sfx('lock');
+      clearLines();
     }
 
-    function checkAndClearLines() {
-      const fullRows = [];
+    function clearLines() {
+      const full = [];
       for (let r = 0; r < ROWS; r++) {
-        if (board[r].every(cell => cell !== null)) {
-          fullRows.push(r);
-        }
+        if (board[r].every(function(c) { return c !== null; })) full.push(r);
       }
-
-      if (fullRows.length > 0) {
-        // Transform every block in cleared rows into glowing "休" Holiday Blocks!
-        clearingRows = fullRows;
-        clearAnimTimer = 1;
-        fullRows.forEach(r => {
-          for (let c = 0; c < COLS; c++) {
-            board[r][c] = { kind: 'holiday', colorKey: 'holiday', label: '休' };
-            spawnVisualBubbles((c + 0.5) * CELL, (r + 0.5) * CELL, 3, true);
-          }
-        });
-
-        audio.playBubbleSfx('clear');
-        triggerBrownCelebration(fullRows.length);
-
-        setTimeout(() => {
-          // Remove cleared rows
-          const remaining = board.filter((_, idx) => !fullRows.includes(idx));
-          while (remaining.length < ROWS) {
-            remaining.unshift(Array(COLS).fill(null));
-          }
-          board = remaining;
-
-          const count = fullRows.length;
-          const lineScores = [0, 150, 400, 900, 2000];
-          score += (lineScores[count] || 2000) * level;
-          holidayLines += count;
-          level = Math.min(15, 1 + Math.floor(holidayLines / 5));
-          brownCharge = Math.min(100, brownCharge + count * 25);
-
-          if (score > bestScore) {
-            bestScore = score;
-            try {
-              localStorage.setItem('line_friends_calendar_tetris_best', String(bestScore));
-            } catch (e) {}
-          }
-
-          clearingRows = [];
-          clearAnimTimer = 0;
-          spawnNextAfterLock();
-          updateHud();
-          renderAll();
-        }, 420);
-      } else {
-        spawnNextAfterLock();
+      if (!full.length) {
+        spawnNext();
+        return;
+      }
+      full.forEach(function(r) {
+        for (let c = 0; c < COLS; c++) {
+          board[r][c] = { kind: 'holiday', colorKey: 'holiday', label: '休' };
+        }
+      });
+      audio.sfx('clear');
+      const msg = full.length === 1 ? '🏖️ 休假 +1 天！' :
+                  full.length === 2 ? '🎉 雙重連假！' :
+                  full.length === 3 ? '✨ 三連休！' : '👑 四連休 TETRIS！';
+      showToast(msg);
+      clearTimer = 1;
+      draw();
+      setTimeout(function() {
+        const remain = board.filter(function(_, i) { return full.indexOf(i) === -1; });
+        while (remain.length < ROWS) remain.unshift(Array(COLS).fill(null));
+        board = remain;
+        const pts = [0, 150, 400, 900, 2000];
+        score += (pts[full.length] || 2000) * level;
+        lines += full.length;
+        level = Math.min(15, 1 + Math.floor(lines / 5));
+        if (score > best) {
+          best = score;
+          try { localStorage.setItem('lf_cal_tetris_best', String(best)); } catch (e) {}
+        }
+        clearTimer = 0;
+        spawnNext();
         updateHud();
-        renderAll();
-      }
+        draw();
+      }, 380);
     }
 
-    function spawnNextAfterLock() {
-      currentPiece = nextPiece;
-      nextPiece = createRandomPiece();
+    function spawnNext() {
+      current = next;
+      next = makePiece();
       canHold = true;
-      renderSidePreviews();
-      if (collides(currentPiece, 0, 0)) {
-        triggerGameOver();
-      }
+      if (collides(current, 0, 0)) gameOver();
+      else draw();
     }
 
-    /********************************************************************
-     * 4. BROWN & SALLY COMPANION CELEBRATIONS & HELPER SKILLS
-     ********************************************************************/
-    function triggerBrownCelebration(linesCleared) {
-      const fig = document.getElementById('brownFigure');
-      const speech = document.getElementById('brownSpeech');
-      const blushL = document.getElementById('brownBlushL');
-      const blushR = document.getElementById('brownBlushR');
-      const toast = document.getElementById('celebrationToast');
-      const toastText = document.getElementById('celebrationText');
-
-      const messages = {
-        1: ['🏖️ 休假 +1 天！啵啵！', '🐻 熊大幫你蓋休假章！'],
-        2: ['🎉 雙重連假 DOUBLE 休！', '🐤 莎莉也開心跳起來！'],
-        3: ['✨ 三連休 TRIPLE HOLIDAY!', '🧸 超棒的連假派對！'],
-        4: ['👑 四連休 TETRIS 黃金週！', '🎊 熊大兔兔莎莉全員慶祝！']
-      };
-      const pool = messages[linesCleared] || messages[4];
-      const msg = pool[Math.floor(Math.random() * pool.length)];
-
-      speech.textContent = msg;
-      fig.classList.remove('brown-bob');
-      fig.classList.add('brown-celebrate');
-      blushL.setAttribute('opacity', '0.85');
-      blushR.setAttribute('opacity', '0.85');
-
-      toastText.textContent = msg;
-      toast.classList.remove('opacity-0');
-      toast.classList.add('opacity-100');
-
-      setTimeout(() => {
-        fig.classList.remove('brown-celebrate');
-        fig.classList.add('brown-bob');
-        blushL.setAttribute('opacity', '0.35');
-        blushR.setAttribute('opacity', '0.35');
-        toast.classList.remove('opacity-100');
-        toast.classList.add('opacity-0');
-      }, 1500);
+    function showToast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      setTimeout(function() { toastEl.classList.remove('show'); }, 1200);
     }
 
-    // Skill 1: Brown clears the bottom-most occupied row by filling gaps with '休' blocks!
-    function activateBrownRowHoliday() {
-      if (!isRunning || isPaused || isGameOver || clearAnimTimer > 0) return;
-      if (brownCharge < 50) {
-        document.getElementById('brownSpeech').textContent = '🐻 能量滿 50% 就能幫消一行喔！';
-        audio.playBubbleSfx('move');
-        return;
+    function drawTile(px, py, s, data, alpha) {
+      if (!data) return;
+      alpha = alpha == null ? 1 : alpha;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      const pal = PALETTE[data.colorKey] || PALETTE.white;
+      const pad = Math.max(0.8, s * 0.04);
+      const bx = px + pad;
+      const by = py + pad + s * 0.08;
+      const bw = s - pad * 2;
+      const bh = s - pad * 2 - s * 0.08;
+      const rad = Math.max(2, s * 0.16);
+
+      const sw = bw * 0.48, sh = Math.max(2.5, s * 0.12);
+      const sx = bx + (bw - sw) / 2, sy = py + s * 0.02;
+      ctx.fillStyle = pal.stud;
+      ctx.strokeStyle = pal.border;
+      ctx.lineWidth = Math.max(1, s * 0.035);
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(sx, sy, sw, sh + 1.5, [2, 2, 0, 0]);
+      else ctx.rect(sx, sy, sw, sh + 1.5);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = pal.fill;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(bx, by, bw, bh, rad);
+      else ctx.rect(bx, by, bw, bh);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(bx + 2, by + bh - 3);
+      ctx.lineTo(bx + 2, by + 2);
+      ctx.lineTo(bx + bw - 3, by + 2);
+      ctx.stroke();
+
+      const cx = bx + bw / 2, cy = by + bh / 2 + 0.5;
+      ctx.fillStyle = pal.text;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      if (data.kind === 'holiday') {
+        ctx.font = '900 ' + Math.round(s * 0.48) + 'px "Noto Sans TC",sans-serif';
+        ctx.fillText('休', cx, cy);
+      } else if (data.kind === 'date') {
+        ctx.font = '800 ' + Math.round(s * 0.42) + 'px Fredoka,sans-serif';
+        ctx.fillText(String(data.label), cx, cy);
+      } else {
+        ctx.font = Math.round(s * 0.42) + 'px sans-serif';
+        const map = { cony: '🐰', brown: '🐻', sally: '🐤', cactus: '🌵', icecream: '🍦', flower: '🌸', sprout: '🌱' };
+        ctx.fillText(map[data.iconId] || '★', cx, cy);
       }
-      // Find lowest row that has at least 1 block (or bottom row)
-      let targetRow = ROWS - 1;
-      for (let r = ROWS - 1; r >= 0; r--) {
-        if (board[r].some(c => c !== null)) {
-          targetRow = r;
-          break;
-        }
-      }
-      brownCharge = Math.max(0, brownCharge - 50);
-      audio.playBubbleSfx('brown_skill');
-      for (let c = 0; c < COLS; c++) {
-        board[targetRow][c] = { kind: 'holiday', colorKey: 'holiday', label: '休' };
-      }
-      updateHud();
-      checkAndClearLines();
+      ctx.restore();
     }
 
-    // Skill 2: Summon a 1x1 Golden Brown Holiday Block as Next/Current
-    function activateBrownGiftBlock() {
-      if (!isRunning || isPaused || isGameOver || clearAnimTimer > 0) return;
-      if (brownCharge < 35) {
-        document.getElementById('brownSpeech').textContent = '🎁 能量滿 35% 可召喚單格休假塊！';
-        audio.playBubbleSfx('move');
-        return;
-      }
-      brownCharge = Math.max(0, brownCharge - 35);
-      audio.playBubbleSfx('brown_skill');
-      nextPiece = createRandomPiece(true);
-      document.getElementById('brownSpeech').textContent = '🎁 下一個是百搭「休」字禮盒！';
-      triggerBrownCelebration(1);
-      renderSidePreviews();
-      updateHud();
-    }
-
-    /********************************************************************
-     * 5. RENDERING PLAYFIELD, GHOST PIECE, BUBBLES & PREVIEWS
-     ********************************************************************/
-
-    /**
-     * Dynamically size the main canvas so the 10×18 board fills
-     * the largest possible area on any phone without scrolling.
-     */
-    function resizeGameCanvas() {
-      const well = canvas.parentElement; // .recessed-well
-      if (!well) return;
-
-      const availW = Math.max(120, well.clientWidth - 4);
-      const availH = Math.max(160, well.clientHeight - 4);
-
-      const cellByW = Math.floor(availW / COLS);
-      const cellByH = Math.floor(availH / ROWS);
-      let newCell = Math.min(cellByW, cellByH);
-      newCell = Math.max(14, Math.min(36, newCell));
-
-      if (newCell === CELL && canvas.width === COLS * CELL && canvas.height === ROWS * CELL) {
-        return;
-      }
-
-      CELL = newCell;
-      canvas.width = COLS * CELL;
-      canvas.height = ROWS * CELL;
-      canvas.style.width = canvas.width + 'px';
-      canvas.style.height = canvas.height + 'px';
-
-      renderSidePreviews();
-      renderAll();
-    }
-
-    let resizeTimer = null;
-    function scheduleResize() {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => { resizeGameCanvas(); }, 80);
-    }
-    window.addEventListener('resize', scheduleResize);
-    window.addEventListener('orientationchange', () => {
-      setTimeout(scheduleResize, 150);
-    });
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', scheduleResize);
-    }
-
-    function getGhostY() {
-      if (!currentPiece) return 0;
-      let gy = currentPiece.y;
-      while (!collides(currentPiece, 0, gy - currentPiece.y + 1)) {
-        gy++;
-      }
+    function ghostY() {
+      let gy = current.y;
+      while (!collides(current, 0, gy - current.y + 1)) gy++;
       return gy;
     }
 
-    function renderAll() {
-      // 1. Recessed Dark Green Board Background with LEGO Grid Studs
+    function draw() {
       ctx.fillStyle = '#153B25';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      const socketR = Math.max(2.5, CELL * 0.17);
+      const socketR = Math.max(2, CELL * 0.16);
       for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
-          const x = c * CELL;
-          const y = r * CELL;
-          ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-          ctx.lineWidth = 1;
+          const x = c * CELL, y = r * CELL;
+          ctx.strokeStyle = 'rgba(255,255,255,0.04)';
           ctx.strokeRect(x + 0.5, y + 0.5, CELL - 1, CELL - 1);
-
-          // Subtle recessed LEGO socket circle in empty cells
           if (!board[r][c]) {
             ctx.beginPath();
             ctx.arc(x + CELL / 2, y + CELL / 2 + 1, socketR, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(0,0,0,0.18)';
+            ctx.fillStyle = 'rgba(0,0,0,0.2)';
             ctx.fill();
           }
         }
       }
 
-      // 2. Draw Locked Calendar Blocks
-      for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-          if (board[r][c]) {
-            drawLegoCalendarTile(ctx, c * CELL, r * CELL, CELL, board[r][c], 1.0);
-          }
-        }
-      }
+      for (let r = 0; r < ROWS; r++)
+        for (let c = 0; c < COLS; c++)
+          if (board[r][c]) drawTile(c * CELL, r * CELL, CELL, board[r][c]);
 
-      // 3. Draw Ghost Piece & Active Falling Piece
-      if (currentPiece && clearAnimTimer === 0) {
-        const ghostY = getGhostY();
-        const mat = currentPiece.matrix;
-        // Ghost preview
-        for (let r = 0; r < mat.length; r++) {
-          for (let c = 0; c < mat[r].length; c++) {
-            if (mat[r][c]) {
-              drawLegoCalendarTile(
-                ctx,
-                (currentPiece.x + c) * CELL,
-                (ghostY + r) * CELL,
-                CELL,
-                mat[r][c],
-                0.24
-              );
-            }
-          }
-        }
-        // Active piece
-        for (let r = 0; r < mat.length; r++) {
-          for (let c = 0; c < mat[r].length; c++) {
-            if (mat[r][c]) {
-              drawLegoCalendarTile(
-                ctx,
-                (currentPiece.x + c) * CELL,
-                (currentPiece.y + r) * CELL,
-                CELL,
-                mat[r][c],
-                1.0
-              );
+      if (current && !clearTimer) {
+        const gy = ghostY();
+        const m = current.matrix;
+        for (let r = 0; r < m.length; r++) {
+          for (let c = 0; c < m[r].length; c++) {
+            if (m[r][c]) {
+              drawTile((current.x + c) * CELL, (gy + r) * CELL, CELL, m[r][c], 0.22);
+              drawTile((current.x + c) * CELL, (current.y + r) * CELL, CELL, m[r][c], 1);
             }
           }
         }
       }
-
-      // 4. Draw Floating Glossy Soap Bubbles
-      for (let i = visualBubbles.length - 1; i >= 0; i--) {
-        const b = visualBubbles[i];
-        b.x += b.vx;
-        b.y += b.vy;
-        b.alpha -= 0.024;
-        if (b.alpha <= 0) {
-          visualBubbles.splice(i, 1);
-          continue;
-        }
-        ctx.save();
-        ctx.globalAlpha = b.alpha;
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-        ctx.fillStyle = b.isGold ? 'rgba(255, 235, 130, 0.35)' : 'rgba(195, 240, 255, 0.28)';
-        ctx.fill();
-        ctx.strokeStyle = b.isGold ? '#FFE066' : '#E0F7FF';
-        ctx.lineWidth = 1.3;
-        ctx.stroke();
-        // Little white bubble shine dot
-        ctx.beginPath();
-        ctx.arc(b.x - b.r * 0.32, b.y - b.r * 0.32, b.r * 0.24, 0, Math.PI * 2);
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fill();
-        ctx.restore();
-      }
-    }
-
-    function renderMiniCanvas(targetCtx, piece) {
-      targetCtx.fillStyle = '#133622';
-      targetCtx.fillRect(0, 0, 76, 76);
-      if (!piece) return;
-      const mat = piece.matrix;
-      const tile = 17;
-      const w = mat[0].length * tile;
-      const h = mat.length * tile;
-      const ox = (76 - w) / 2;
-      const oy = (76 - h) / 2;
-      for (let r = 0; r < mat.length; r++) {
-        for (let c = 0; c < mat[r].length; c++) {
-          if (mat[r][c]) {
-            drawLegoCalendarTile(targetCtx, ox + c * tile, oy + r * tile, tile, mat[r][c], 1.0);
-          }
-        }
-      }
-    }
-
-    function renderSidePreviews() {
-      renderMiniCanvas(nextCtx, nextPiece);
-      renderMiniCanvas(holdCtx, holdPiece);
     }
 
     function updateHud() {
       document.getElementById('scoreVal').textContent = score;
-      document.getElementById('linesVal').textContent = `${holidayLines} 天`;
-      document.getElementById('holidayBadge').textContent = `🏖️ 累積休假 ${holidayLines} 天`;
-      document.getElementById('levelVal').textContent = `Lv.${level}`;
-      document.getElementById('bestVal').textContent = bestScore;
-      document.getElementById('brownChargeBar').style.width = `${brownCharge}%`;
-      document.getElementById('brownChargeTxt').textContent =
-        brownCharge >= 50 ? `${brownCharge}% READY!` : `${brownCharge}% 充能中`;
+      document.getElementById('linesVal').textContent = lines;
+      document.getElementById('levelVal').textContent = level;
     }
 
-    /********************************************************************
-     * 6. GAME LOOP & LIFECYCLE CONTROLS
-     ********************************************************************/
-    function getDropInterval() {
-      return Math.max(140, 820 - (level - 1) * 52);
+    function resize() {
+      const stage = document.getElementById('stage');
+      const frame = document.getElementById('boardFrame');
+      const availW = Math.max(140, stage.clientWidth - 10);
+      const availH = Math.max(180, stage.clientHeight - 10);
+      let cell = Math.min(Math.floor(availW / COLS), Math.floor(availH / ROWS));
+      cell = Math.max(12, Math.min(40, cell));
+      CELL = cell;
+      canvas.width = COLS * CELL;
+      canvas.height = ROWS * CELL;
+      canvas.style.width = canvas.width + 'px';
+      canvas.style.height = canvas.height + 'px';
+      frame.style.width = (canvas.width + 6) + 'px';
+      frame.style.height = (canvas.height + 6) + 'px';
+      draw();
     }
 
-    function gameLoop(timestamp) {
+    let resizeT = null;
+    function scheduleResize() {
+      clearTimeout(resizeT);
+      resizeT = setTimeout(resize, 60);
+    }
+    window.addEventListener('resize', scheduleResize);
+    window.addEventListener('orientationchange', function() { setTimeout(scheduleResize, 120); });
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', scheduleResize);
+
+    function dropInterval() {
+      return Math.max(120, 780 - (level - 1) * 48);
+    }
+
+    function loop(ts) {
       if (!isRunning) return;
-      if (!isPaused && !isGameOver && clearAnimTimer === 0) {
-        if (timestamp - lastDropTime > getDropInterval()) {
-          if (!collides(currentPiece, 0, 1)) {
-            currentPiece.y += 1;
-          } else {
-            lockPiece();
-          }
-          lastDropTime = timestamp;
+      if (!isPaused && !isGameOver && !clearTimer) {
+        if (ts - lastDrop > dropInterval()) {
+          if (!collides(current, 0, 1)) current.y += 1;
+          else lock();
+          lastDrop = ts;
         }
       }
-      renderAll();
-      animFrameId = requestAnimationFrame(gameLoop);
+      draw();
+      animId = requestAnimationFrame(loop);
     }
 
-    function startNewGame() {
-      if (animFrameId) cancelAnimationFrame(animFrameId);
+    function startGame() {
+      if (animId) cancelAnimationFrame(animId);
       audio.init();
-      audio.playBubbleSfx('test');
-      if (audio.bgmEnabled) audio.startBgm();
-
-      board = createEmptyBoard();
-      score = 0;
-      holidayLines = 0;
-      level = 1;
-      brownCharge = 100;
+      board = emptyBoard();
+      score = 0; lines = 0; level = 1;
       dateCounter = 1;
-      holdPiece = null;
-      canHold = true;
-      clearingRows = [];
-      clearAnimTimer = 0;
-
-      currentPiece = createRandomPiece();
-      nextPiece = createRandomPiece();
-
+      hold = null; canHold = true;
+      clearTimer = 0;
+      current = makePiece();
+      next = makePiece();
       isRunning = true;
       isPaused = false;
       isGameOver = false;
-      document.body.classList.add('playing');
-      document.getElementById('boardOverlay').classList.add('hidden');
-      document.getElementById('btnPause').textContent = '⏸ 暫停';
-      document.getElementById('mBtnPause').textContent = '⏸';
-      document.getElementById('brownSpeech').textContent = '一起消方塊放假吧！🫧';
-
+      overlay.classList.add('hidden');
+      document.getElementById('btnPause').textContent = '⏸';
       updateHud();
-      renderSidePreviews();
-      // Re-measure after overlay is removed so canvas fills the free space
-      requestAnimationFrame(() => {
-        resizeGameCanvas();
-        lastDropTime = performance.now();
-        animFrameId = requestAnimationFrame(gameLoop);
-      });
+      resize();
+      lastDrop = performance.now();
+      animId = requestAnimationFrame(loop);
     }
 
     function togglePause() {
       if (!isRunning || isGameOver) return;
       isPaused = !isPaused;
-      audio.playBubbleSfx('rotate');
-      const overlay = document.getElementById('boardOverlay');
+      audio.sfx('rotate');
       if (isPaused) {
-        document.body.classList.remove('playing');
         overlay.classList.remove('hidden');
-        document.getElementById('overlayTitle').textContent = '⏸ 休息一下';
-        document.getElementById('overlayDesc').textContent = '熊大與莎莉正在喝下午茶等你回來！';
-        document.getElementById('btnStartGame').textContent = '▶️ 繼續遊戲';
-        document.getElementById('btnPause').textContent = '▶️ 繼續';
-        document.getElementById('mBtnPause').textContent = '▶️';
+        document.getElementById('overlayTitle').textContent = '⏸ 暫停';
+        document.getElementById('overlayDesc').textContent = '休息一下，準備好再繼續！';
+        document.getElementById('btnStart').textContent = '▶️ 繼續';
+        document.getElementById('btnPause').textContent = '▶️';
       } else {
-        document.body.classList.add('playing');
         overlay.classList.add('hidden');
-        document.getElementById('btnPause').textContent = '⏸ 暫停';
-        document.getElementById('mBtnPause').textContent = '⏸';
-        lastDropTime = performance.now();
+        document.getElementById('btnPause').textContent = '⏸';
+        lastDrop = performance.now();
       }
     }
 
-    function triggerGameOver() {
+    function gameOver() {
       isGameOver = true;
       isRunning = false;
-      document.body.classList.remove('playing');
-      audio.playBubbleSfx('hold');
-      const overlay = document.getElementById('boardOverlay');
       overlay.classList.remove('hidden');
-      document.getElementById('overlayTitle').textContent = '📅 本月日曆堆滿囉！';
-      document.getElementById('overlayDesc').innerHTML =
-        `這次一共幫熊大爭取到 <b class="text-amber-300">${holidayLines} 天休假</b>，總分 <b class="text-amber-300">${score} 分</b>！再來挑戰更多連假吧！`;
-      document.getElementById('btnStartGame').textContent = '🔄 再玩一局 (Restart)';
-      document.getElementById('mBtnPause').textContent = '⏸';
+      document.getElementById('overlayTitle').textContent = '📅 日曆堆滿了';
+      document.getElementById('overlayDesc').textContent =
+        '這局爭取到 ' + lines + ' 天休假，分數 ' + score + (best ? '（最高 ' + best + '）' : '');
+      document.getElementById('btnStart').textContent = '🔄 再玩一局';
+      document.getElementById('btnPause').textContent = '⏸';
     }
 
-    /********************************************************************
-     * 7. EVENT LISTENERS (KEYBOARD, BUTTONS, AUDIO & INTERACTIVE PROPS)
-     ********************************************************************/
-    document.getElementById('btnStartGame').addEventListener('click', () => {
-      if (isPaused) {
-        togglePause();
-      } else {
-        startNewGame();
-      }
-    });
-
-    document.getElementById('btnLeft').addEventListener('click', () => movePiece(-1));
-    document.getElementById('btnRight').addEventListener('click', () => movePiece(1));
-    document.getElementById('btnRotate').addEventListener('click', () => rotatePiece());
-    document.getElementById('btnDown').addEventListener('click', () => softDrop());
-    document.getElementById('btnHardDrop').addEventListener('click', () => hardDrop());
-    document.getElementById('btnPause').addEventListener('click', () => togglePause());
-    document.getElementById('btnHoldBox').addEventListener('click', () => holdCurrentPiece());
-
-    // Mobile fixed gamepad — use touchstart for zero lag (no 300ms wait)
-    function bindMobileTap(id, fn) {
-      const btn = document.getElementById(id);
-      if (!btn) return;
-      let locked = false;
-      const fire = (e) => {
+    function bindTap(id, fn) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      let lock = false;
+      const fire = function(e) {
         e.preventDefault();
-        e.stopPropagation();
-        if (locked) return;
-        locked = true;
+        if (lock) return;
+        lock = true;
         audio.init();
         fn();
-        setTimeout(() => { locked = false; }, 80);
+        setTimeout(function() { lock = false; }, 70);
       };
-      btn.addEventListener('touchstart', fire, { passive: false });
-      btn.addEventListener('click', fire);
+      el.addEventListener('touchstart', fire, { passive: false });
+      el.addEventListener('click', fire);
     }
-    bindMobileTap('mBtnLeft', () => movePiece(-1));
-    bindMobileTap('mBtnRight', () => movePiece(1));
-    bindMobileTap('mBtnRotate', () => rotatePiece());
-    bindMobileTap('mBtnDown', () => softDrop());
-    bindMobileTap('mBtnHardDrop', () => hardDrop());
-    bindMobileTap('mBtnPause', () => togglePause());
-    bindMobileTap('mBtnHold', () => holdCurrentPiece());
 
-    // ===== Touch / Swipe gestures on canvas (mobile-friendly) =====
-    (function setupCanvasGestures() {
-      const el = document.getElementById('gameCanvas');
-      let startX = 0, startY = 0, startTime = 0;
-      let moved = false;
-      const TAP_MAX_MS = 320;
-      const TAP_MAX_DIST = 22;
-      const SWIPE_MIN = 24;
+    bindTap('btnLeft', function() { move(-1); });
+    bindTap('btnRight', function() { move(1); });
+    bindTap('btnDown', function() { softDrop(); });
+    bindTap('btnRotate', function() { rotate(); });
+    bindTap('btnHardDrop', function() { hardDrop(); });
+    bindTap('btnHold', function() { doHold(); });
+    bindTap('btnPause', function() {
+      if (!isRunning) startGame();
+      else togglePause();
+    });
+    bindTap('btnStart', function() {
+      if (isPaused) togglePause();
+      else startGame();
+    });
+    bindTap('btnMute', function() {
+      audio.enabled = !audio.enabled;
+      document.getElementById('btnMute').textContent = audio.enabled ? '🫧' : '🔇';
+      if (audio.enabled) audio.sfx('move');
+    });
 
-      function getPoint(e) {
-        if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-        if (e.changedTouches && e.changedTouches[0]) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-        return { x: e.clientX, y: e.clientY };
+    (function() {
+      let sx = 0, sy = 0, t0 = 0, moved = false;
+      const el = canvas;
+      function pt(e) {
+        const t = e.touches ? e.touches[0] : (e.changedTouches ? e.changedTouches[0] : e);
+        return { x: t.clientX, y: t.clientY };
       }
-
-      el.addEventListener('touchstart', (e) => {
+      el.addEventListener('touchstart', function(e) {
         audio.init();
         if (!isRunning || isPaused) return;
-        const p = getPoint(e);
-        startX = p.x; startY = p.y; startTime = Date.now();
-        moved = false;
+        const p = pt(e);
+        sx = p.x; sy = p.y; t0 = Date.now(); moved = false;
       }, { passive: true });
-
-      el.addEventListener('touchmove', (e) => {
+      el.addEventListener('touchmove', function(e) {
         if (!isRunning || isPaused) return;
         e.preventDefault();
-        const p = getPoint(e);
-        if (Math.abs(p.x - startX) > 8 || Math.abs(p.y - startY) > 8) moved = true;
+        const p = pt(e);
+        if (Math.abs(p.x - sx) > 8 || Math.abs(p.y - sy) > 8) moved = true;
       }, { passive: false });
-
-      el.addEventListener('touchend', (e) => {
+      el.addEventListener('touchend', function(e) {
         if (!isRunning || isPaused) return;
-        const p = getPoint(e);
-        const dx = p.x - startX;
-        const dy = p.y - startY;
-        const dt = Date.now() - startTime;
-        const absX = Math.abs(dx);
-        const absY = Math.abs(dy);
-
-        // Tap → rotate
-        if (!moved && dt < TAP_MAX_MS && absX < TAP_MAX_DIST && absY < TAP_MAX_DIST) {
-          rotatePiece();
+        const p = pt(e);
+        const dx = p.x - sx, dy = p.y - sy;
+        const dt = Date.now() - t0;
+        if (!moved && dt < 300 && Math.abs(dx) < 20 && Math.abs(dy) < 20) {
+          rotate();
           return;
         }
-
-        // Swipe
-        if (absX > absY && absX > SWIPE_MIN) {
-          if (dx < 0) movePiece(-1);
-          else movePiece(1);
-        } else if (absY > absX && absY > SWIPE_MIN) {
-          if (dy < 0) rotatePiece();
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 24) move(dx < 0 ? -1 : 1);
+        else if (Math.abs(dy) > 24) {
+          if (dy < 0) rotate();
           else softDrop();
         }
       }, { passive: true });
     })();
 
-    document.getElementById('btnBrownHoliday').addEventListener('click', () => activateBrownRowHoliday());
-    document.getElementById('btnBrownGift').addEventListener('click', () => activateBrownGiftBlock());
-    document.getElementById('brownFigure').addEventListener('click', () => {
-      audio.playBubbleSfx('rotate');
-      if (isRunning && !isPaused && brownCharge >= 50) {
-        activateBrownRowHoliday();
-      } else {
-        triggerBrownCelebration(1);
-      }
-    });
-
-    // Flip Calendar Card Month Switcher
-    document.getElementById('flipCardBtn').addEventListener('click', () => {
-      monthIndex = (monthIndex + 1) % MONTHS.length;
-      document.getElementById('calendarMonthNum').textContent = MONTHS[monthIndex].num;
-      document.getElementById('calendarMonthTxt').textContent = MONTHS[monthIndex].name;
-      audio.playBubbleSfx('rotate');
-    });
-
-    // Audio Controls
-    document.getElementById('btnToggleBgm').addEventListener('click', () => {
-      audio.init();
-      audio.bgmEnabled = !audio.bgmEnabled;
-      document.getElementById('bgmIcon').textContent = audio.bgmEnabled ? '🎵' : '🔇';
-      document.getElementById('bgmLabel').textContent = audio.bgmEnabled ? '俏皮音樂: 開' : '俏皮音樂: 關';
-      if (audio.bgmEnabled && !audio.isPlayingBgm) {
-        audio.startBgm();
-      }
-    });
-
-    document.getElementById('btnToggleSfx').addEventListener('click', () => {
-      audio.init();
-      audio.sfxEnabled = !audio.sfxEnabled;
-      document.getElementById('sfxIcon').textContent = audio.sfxEnabled ? '🫧' : '🔕';
-      document.getElementById('sfxLabel').textContent = audio.sfxEnabled ? '泡泡音效: 開' : '泡泡音效: 關';
-      if (audio.sfxEnabled) audio.playBubbleSfx('test');
-    });
-
-    document.getElementById('btnTestBubble').addEventListener('click', () => {
-      audio.init();
-      audio.sfxEnabled = true;
-      document.getElementById('sfxIcon').textContent = '🫧';
-      document.getElementById('sfxLabel').textContent = '泡泡音效: 開';
-      audio.playBubbleSfx('test');
-      spawnVisualBubbles(canvas.width / 2, canvas.height / 2, 10, true);
-      renderAll();
-    });
-
-    document.getElementById('bgmStyleSelect').addEventListener('change', (e) => {
-      audio.init();
-      audio.bgmStyle = e.target.value;
-      audio.playBubbleSfx('rotate');
-      if (audio.bgmEnabled && !audio.isPlayingBgm) audio.startBgm();
-    });
-
-    document.getElementById('volumeSlider').addEventListener('input', (e) => {
-      audio.setVolume(parseInt(e.target.value, 10) / 100);
-    });
-
-    // Help Modal
-    document.getElementById('btnHelpModal').addEventListener('click', () => {
-      audio.playBubbleSfx('move');
-      document.getElementById('helpModal').classList.remove('hidden');
-      document.getElementById('helpModal').classList.add('flex');
-    });
-    const closeHelp = () => {
-      audio.playBubbleSfx('move');
-      document.getElementById('helpModal').classList.add('hidden');
-      document.getElementById('helpModal').classList.remove('flex');
-    };
-    document.getElementById('btnCloseHelp').addEventListener('click', closeHelp);
-    document.getElementById('btnCloseHelpBottom').addEventListener('click', closeHelp);
-
-    // Keyboard Support
-    window.addEventListener('keydown', (e) => {
-      if (['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', 'Space'].includes(e.code)) {
-        e.preventDefault();
-      }
+    window.addEventListener('keydown', function(e) {
+      if (['ArrowLeft','ArrowRight','ArrowDown','ArrowUp','Space'].indexOf(e.code) !== -1) e.preventDefault();
       if (!isRunning) {
-        if (e.code === 'Enter' || e.code === 'Space') startNewGame();
+        if (e.code === 'Enter' || e.code === 'Space') startGame();
         return;
       }
-      switch (e.code) {
-        case 'ArrowLeft':
-        case 'KeyA':
-          movePiece(-1);
-          break;
-        case 'ArrowRight':
-        case 'KeyD':
-          movePiece(1);
-          break;
-        case 'ArrowDown':
-        case 'KeyS':
-          softDrop();
-          break;
-        case 'ArrowUp':
-        case 'KeyW':
-        case 'KeyZ':
-          rotatePiece();
-          break;
-        case 'Space':
-          hardDrop();
-          break;
-        case 'KeyC':
-        case 'ShiftLeft':
-        case 'ShiftRight':
-          holdCurrentPiece();
-          break;
-        case 'KeyB':
-          activateBrownRowHoliday();
-          break;
-        case 'KeyG':
-          activateBrownGiftBlock();
-          break;
-        case 'KeyP':
-        case 'Escape':
-          togglePause();
-          break;
-      }
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') move(-1);
+      else if (e.code === 'ArrowRight' || e.code === 'KeyD') move(1);
+      else if (e.code === 'ArrowDown' || e.code === 'KeyS') softDrop();
+      else if (e.code === 'ArrowUp' || e.code === 'KeyW' || e.code === 'KeyZ') rotate();
+      else if (e.code === 'Space') hardDrop();
+      else if (e.code === 'KeyC') doHold();
+      else if (e.code === 'KeyP' || e.code === 'Escape') togglePause();
     });
 
-    // Initial Static Preview Render on Load
-    window.onload = () => {
-      board = createEmptyBoard();
-      // Place a few cute decorative sample blocks on the initial screen behind the start modal
-      const sampleRow1 = [
-        { kind: 'icon', colorKey: 'brown', iconId: 'flower' },
-        { kind: 'date', colorKey: 'white', label: 19 },
-        { kind: 'date', colorKey: 'white', label: 20 },
-        { kind: 'date', colorKey: 'white', label: 21 },
-        { kind: 'date', colorKey: 'white', label: 22 },
-        { kind: 'date', colorKey: 'white', label: 23 },
-        { kind: 'date', colorKey: 'white', label: 24 },
-        { kind: 'date', colorKey: 'white', label: 25 },
-        { kind: 'icon', colorKey: 'green', iconId: 'cactus' },
-        { kind: 'icon', colorKey: 'orange', iconId: 'icecream' }
-      ];
-      const sampleRow2 = [
-        { kind: 'icon', colorKey: 'orange', iconId: 'cony' },
-        { kind: 'date', colorKey: 'white', label: 26 },
-        { kind: 'date', colorKey: 'white', label: 27 },
-        { kind: 'date', colorKey: 'white', label: 28 },
-        { kind: 'date', colorKey: 'white', label: 29 },
-        { kind: 'date', colorKey: 'white', label: 30 },
-        { kind: 'date', colorKey: 'white', label: 31 },
-        { kind: 'holiday', colorKey: 'holiday', label: '休' },
-        { kind: 'icon', colorKey: 'blue', iconId: 'sally' },
-        { kind: 'icon', colorKey: 'brown', iconId: 'brown' }
-      ];
-      board[ROWS - 2] = sampleRow1;
-      board[ROWS - 1] = sampleRow2;
-      nextPiece = createRandomPiece();
-      renderSidePreviews();
-      renderAll();
-      // Double rAF + short delay so CSS flex has finished measuring on all phones
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          resizeGameCanvas();
-          setTimeout(resizeGameCanvas, 120);
+    window.addEventListener('load', function() {
+      board = emptyBoard();
+      for (let c = 0; c < COLS; c++) {
+        board[ROWS - 1][c] = c % 3 === 0
+          ? { kind: 'holiday', colorKey: 'holiday', label: '休' }
+          : { kind: 'date', colorKey: 'white', label: (c % 31) + 1 };
+      }
+      resize();
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          resize();
+          setTimeout(resize, 100);
         });
       });
-    };
+    });
+  })();
   </script>
 </body>
 </html>
